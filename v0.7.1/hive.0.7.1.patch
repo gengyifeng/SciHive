@@ -1,0 +1,3514 @@
+diff -urN src.original/build/anttasks/classes/org/apache/hadoop/hive/ant/antlib.xml src/build/anttasks/classes/org/apache/hadoop/hive/ant/antlib.xml
+--- src.original/build/anttasks/classes/org/apache/hadoop/hive/ant/antlib.xml	2012-02-10 08:39:43.000000000 -0500
++++ src/build/anttasks/classes/org/apache/hadoop/hive/ant/antlib.xml	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0"?>
+-
+-<!--
+-   Licensed to the Apache Software Foundation (ASF) under one or more
+-   contributor license agreements.  See the NOTICE file distributed with
+-   this work for additional information regarding copyright ownership.
+-   The ASF licenses this file to You under the Apache License, Version 2.0
+-   (the "License"); you may not use this file except in compliance with
+-   the License.  You may obtain a copy of the License at
+-
+-       http://www.apache.org/licenses/LICENSE-2.0
+-
+-   Unless required by applicable law or agreed to in writing, software
+-   distributed under the License is distributed on an "AS IS" BASIS,
+-   WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
+-   See the License for the specific language governing permissions and
+-   limitations under the License.
+--->
+-
+-
+-<antlib>
+-  <taskdef name="qtestgen"
+-           classname="org.apache.hadoop.hive.ant.QTestGenTask" />
+-  <taskdef name="getversionpref"
+-           classname="org.apache.hadoop.hive.ant.GetVersionPref" />
+-</antlib>
+Binary files src.original/build/anttasks/classes/org/apache/hadoop/hive/ant/GetVersionPref.class and src/build/anttasks/classes/org/apache/hadoop/hive/ant/GetVersionPref.class differ
+Binary files src.original/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask.class and src/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask.class differ
+Binary files src.original/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask$DisabledQFileFilter.class and src/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask$DisabledQFileFilter.class differ
+Binary files src.original/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask$QFileFilter.class and src/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask$QFileFilter.class differ
+Binary files src.original/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask$QFileRegexFilter.class and src/build/anttasks/classes/org/apache/hadoop/hive/ant/QTestGenTask$QFileRegexFilter.class differ
+Binary files src.original/build/anttasks/hive-anttasks-0.7.1.jar and src/build/anttasks/hive-anttasks-0.7.1.jar differ
+diff -urN src.original/build-common.xml src/build-common.xml
+--- src.original/build-common.xml	2011-06-13 14:23:02.000000000 -0400
++++ src/build-common.xml	2013-02-26 22:22:21.847859832 -0500
+@@ -317,7 +317,15 @@
+       </manifest>
+       <metainf dir="${hive.root}" includes="LICENSE,NOTICE"/>
+     </jar>
++    <copy todir="/home/yifeng/hive-0.7.1/lib">
++        <fileset dir="${build.dir.hive}/${ant.project.name}" includes="*.jar"/>
++    </copy>
+   </target>
++<!--  <target name="copy" depends="jar">-->
++<!--    <copy todir="/home/yifeng/hive-0.7.1/lib">-->
++<!--        <fileset dir="${build.dir.hive}/${ant.project.name}" includes="*.jar"/>-->
++<!--    </copy>-->
++<!--  </target>-->
+ 
+   <!-- target to compile tests -->
+   <target name="compile-test" depends="compile">
+diff -urN src.original/.classpath src/.classpath
+--- src.original/.classpath	2012-02-10 08:39:45.000000000 -0500
++++ src/.classpath	2013-02-26 18:53:06.827342087 -0500
+@@ -1,67 +1,6 @@
+ <?xml version="1.0" encoding="UTF-8"?>
+ <classpath>
+-  <classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+-  <classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/hadoop-0.20.1-core.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/hadoop-0.20.1-test.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/hadoop-0.20.1-tools.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/lib/servlet-api-2.5-6.1.14.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/lib/jetty-6.1.14.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/lib/jetty-util-6.1.14.jar"/>
+-  <classpathentry exported="true" kind="lib" path="cli/lib/jline-0.9.94.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/json.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/asm-3.1.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/commons-codec-1.3.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/commons-lang-2.4.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/commons-logging-api-1.0.4.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/derby.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/dist/lib/hbase-0.89.0-SNAPSHOT.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/dist/lib/hbase-0.89.0-SNAPSHOT-tests.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/thrift-fb303-0.5.0.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/thrift-0.5.0.jar"/>
+-  <classpathentry exported="true" kind="lib" path="build/dist/lib/zookeeper-3.3.1.jar"/>
+-  <classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+-  <classpathentry exported="true" kind="lib" path="ql/lib/antlr-3.0.1.jar"/>
+-  <classpathentry exported="true" kind="lib" path="ql/lib/antlr-runtime-3.0.1.jar"/>
+-  <classpathentry exported="true" kind="lib" path="testlibs/junit-3.8.1.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/jdo2-api-2.3-ec.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/datanucleus-core-2.0.3.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/datanucleus-enhancer-2.0.3.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/datanucleus-rdbms-2.0.3.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/commons-cli-1.2.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/commons-collections-3.2.1.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/commons-dbcp-1.4.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/datanucleus-connectionpool-2.0.3.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/commons-pool-1.5.4.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/slf4j-api-1.6.1.jar"/>
+-  <classpathentry kind="lib" path="build/dist/lib/slf4j-log4j12-1.6.1.jar"/>
+-  <classpathentry kind="src" path="build/contrib/test/src"/>
+-  <classpathentry kind="src" path="build/metastore/gen/antlr/gen-java"/>
+-  <classpathentry kind="src" path="build/ql/test/src"/>
+-  <classpathentry kind="src" path="build/ql/gen/antlr/gen-java"/>
+-  <classpathentry kind="src" path="cli/src/java"/>
+-  <classpathentry kind="src" path="common/src/java"/>
+-  <classpathentry kind="src" path="contrib/src/java"/>
+-  <classpathentry kind="src" path="contrib/src/test"/>
+-  <classpathentry kind="src" path="metastore/src/gen/thrift/gen-javabean"/>
+-  <classpathentry kind="src" path="metastore/src/java"/>
+-  <classpathentry kind="src" path="metastore/src/model"/>
+-  <classpathentry kind="src" path="metastore/src/test"/>
+-  <classpathentry kind="src" path="ql/src/gen/thrift/gen-javabean"/>
+-  <classpathentry kind="src" path="ql/src/java"/>
+-  <classpathentry kind="src" path="ql/src/test"/>
+-  <classpathentry kind="src" path="serde/src/gen/thrift/gen-javabean"/>
+-  <classpathentry kind="src" path="serde/src/gen/protobuf/gen-java"/>
+-  <classpathentry kind="src" path="serde/src/java"/>
+-  <classpathentry kind="src" path="serde/src/test"/>
+-  <classpathentry kind="src" path="service/src/gen/thrift/gen-javabean"/>
+-  <classpathentry kind="src" path="service/src/java"/>
+-  <classpathentry kind="src" path="service/src/test"/>
+-  <classpathentry kind="src" path="jdbc/src/java"/>
+-  <classpathentry kind="src" path="jdbc/src/test"/>
+-  <classpathentry kind="src" path="shims/src/0.20/java"/>
+-  <classpathentry kind="src" path="shims/src/common/java"/>
+-  <classpathentry kind="src" path="hwi/src/java"/>
+-  <classpathentry kind="src" path="hwi/src/test"/>
+-  <classpathentry kind="output" path="build/eclipse-classes"/>
++	<classpathentry kind="src" path="src"/>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
++	<classpathentry kind="output" path="bin"/>
+ </classpath>
+diff -urN src.original/.classpath._hbase src/.classpath._hbase
+--- src.original/.classpath._hbase	2012-02-10 08:39:45.000000000 -0500
++++ src/.classpath._hbase	1969-12-31 19:00:00.000000000 -0500
+@@ -1,60 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<classpath>
+-	<classpathentry exported="true" kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
+-	<classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/hadoop-0.20.1-core.jar"/>
+-	<classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/hadoop-0.20.1-test.jar"/>
+-	<classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/lib/servlet-api-2.5-6.1.14.jar"/>
+-	<classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/lib/jetty-6.1.14.jar"/>
+-	<classpathentry exported="true" kind="lib" path="build/hadoopcore/hadoop-0.20.1/lib/jetty-util-6.1.14.jar"/>
+-	<classpathentry exported="true" kind="lib" path="cli/lib/jline-0.9.94.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/json.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/asm-3.1.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/commons-cli-1.2.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/commons-codec-@commons-code.version@.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/commons-lang-2.4.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/commons-logging-1.0.4.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/commons-logging-api-1.0.4.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/derby.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/jdo2-api-@jdo2-api.version@.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/datanucleus-core-2.0.3.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/datanucleus-enhancer-2.0.3.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/datanucleus-rdbms-2.0.3.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/thrift-fb303-0.5.0.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/thrift-0.5.0.jar"/>
+-	<classpathentry exported="true" kind="lib" path="lib/log4j-1.2.15.jar"/>
+-	<classpathentry exported="true" kind="lib" path="ql/lib/antlr-3.0.1.jar"/>
+-	<classpathentry exported="true" kind="lib" path="ql/lib/antlr-runtime-3.0.1.jar"/>
+-	<classpathentry exported="true" kind="lib" path="testlibs/junit-3.8.1.jar"/>
+-	<classpathentry exported="true" kind="lib" path="stats/lib/hbase-0.89.0-SNAPSHOT.jar"/>
+-	<classpathentry exported="true" kind="lib" path="stats/lib/hbase-0.89.0-SNAPSHOT-test.jar"/>
+-	<classpathentry exported="true" kind="lib" path="stats/lib/zookeeper-3.3.1.jar"/>
+-	<classpathentry kind="src" path="build/ql/gen-javabean"/>
+-	<classpathentry kind="src" path="build/contrib/test/src"/>
+-	<classpathentry kind="src" path="build/ql/test/src"/>
+-	<classpathentry kind="src" path="cli/src/java"/>
+-	<classpathentry kind="src" path="common/src/java"/>
+-	<classpathentry kind="src" path="contrib/src/java"/>
+-	<classpathentry kind="src" path="contrib/src/test"/>
+-	<classpathentry kind="src" path="metastore/src/gen-javabean"/>
+-	<classpathentry kind="src" path="metastore/src/java"/>
+-	<classpathentry kind="src" path="metastore/src/model"/>
+-	<classpathentry kind="src" path="metastore/src/test"/>
+-	<classpathentry kind="src" path="ql/src/gen-javabean"/>
+-	<classpathentry kind="src" path="ql/src/java"/>
+-	<classpathentry kind="src" path="ql/src/test"/>
+-	<classpathentry kind="src" path="serde/src/gen-javabean"/>
+-        <classpathentry kind="src" path="serde/src/gen-java"/>
+-	<classpathentry kind="src" path="serde/src/java"/>
+-	<classpathentry kind="src" path="serde/src/test"/>
+-	<classpathentry kind="src" path="service/src/gen-javabean"/>
+-	<classpathentry kind="src" path="service/src/java"/>
+-	<classpathentry kind="src" path="service/src/test"/>
+-	<classpathentry kind="src" path="jdbc/src/java"/>
+-	<classpathentry kind="src" path="jdbc/src/test"/>
+-	<classpathentry kind="src" path="shims/src/0.20/java"/>
+-	<classpathentry kind="src" path="shims/src/common/java"/>
+-	<classpathentry kind="src" path="hbase-handler/src/java"/>
+-        <classpathentry kind="src" path="hwi/src/java"/>
+-	<classpathentry kind="src" path="hwi/src/test"/>
+-        <classpathentry kind="output" path="build/eclipse-classes"/>
+-</classpath>
+diff -urN src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java
+--- src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java	1969-12-31 19:00:00.000000000 -0500
++++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java	2013-02-27 23:10:20.255541485 -0500
+@@ -0,0 +1,750 @@
++package org.apache.hadoop.hive.contrib.fileformat.netcdf;
++
++import java.io.IOException;
++import java.io.PrintStream;
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.HashSet;
++import java.util.LinkedHashMap;
++import java.util.List;
++import org.apache.commons.logging.Log;
++import org.apache.hadoop.conf.Configuration;
++import org.apache.hadoop.fs.BlockLocation;
++import org.apache.hadoop.fs.FileStatus;
++import org.apache.hadoop.fs.FileSystem;
++import org.apache.hadoop.fs.Path;
++import org.apache.hadoop.fs.PathFilter;
++import org.apache.hadoop.hive.conf.HiveConf;
++import org.apache.hadoop.hive.ql.io.InputFormatChecker;
++import org.apache.hadoop.hive.ql.plan.ExprNodeColumnDesc;
++import org.apache.hadoop.hive.ql.plan.ExprNodeConstantDesc;
++import org.apache.hadoop.hive.ql.plan.ExprNodeDesc;
++import org.apache.hadoop.hive.ql.plan.ExprNodeGenericFuncDesc;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDF;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBaseCompare;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBridge;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPAnd;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqual;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqualOrGreaterThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqualOrLessThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPGreaterThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPLessThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPNotEqual;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPOr;
++import org.apache.hadoop.hive.serde2.ColumnProjectionUtils;
++import org.apache.hadoop.io.LongWritable;
++import org.apache.hadoop.io.Text;
++import org.apache.hadoop.io.NullWritable;
++import org.apache.hadoop.mapred.FileInputFormat;
++import org.apache.hadoop.mapred.FileSplit;
++import org.apache.hadoop.mapred.InputSplit;
++import org.apache.hadoop.mapred.InvalidInputException;
++import org.apache.hadoop.mapred.JobConf;
++import org.apache.hadoop.mapred.RecordReader;
++import org.apache.hadoop.mapred.Reporter;
++import org.apache.hadoop.net.NetworkTopology;
++import ucar.ma2.Array;
++import ucar.ma2.Index;
++import ucar.ma2.InvalidRangeException;
++import ucar.ma2.Section;
++import ucar.nc2.Dimension;
++import ucar.nc2.NetcdfFile;
++import ucar.nc2.Variable;
++
++public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
++  implements InputFormatChecker
++{
++  private static final double SPLIT_SLOP = 1.1;
++  private  long minSplitSize = 1;
++  private static final PathFilter hiddenFileFilter = new PathFilter() {
++    public boolean accept(Path p) {
++      String name = p.getName();
++      return (!name.startsWith("_")) && (!name.startsWith("."));
++    }
++  };
++
++  protected boolean isSplitable(FileSystem fs, Path filename)
++  {
++    return false;
++  }
++
++  public RecordReader<LongWritable, Text> getRecordReader(InputSplit split, JobConf conf, Reporter reporter)
++    throws IOException
++  {
++    reporter.setStatus(split.toString());
++    return new NcFileRecordReader(conf, split);
++  }
++
++  protected FileStatus[] listStatus(JobConf job, FileStatus file) throws IOException
++  {
++    Path p = file.getPath();
++
++    List result = new ArrayList();
++    List errors = new ArrayList();
++
++    List filters = new ArrayList();
++    filters.add(hiddenFileFilter);
++    PathFilter jobFilter = getInputPathFilter(job);
++    if (jobFilter != null) {
++      filters.add(jobFilter);
++    }
++    PathFilter inputFilter = new MultiPathFilter(filters);
++    FileSystem fs = p.getFileSystem(job);
++    FileStatus[] matches = fs.globStatus(p, inputFilter);
++    if (matches == null)
++      errors.add(new IOException("Input path does not exist: " + p));
++    else if (matches.length == 0) {
++      errors.add(new IOException("Input Pattern " + p + " matches 0 files"));
++    }
++    else {
++      for (FileStatus globStat : matches) {
++        if (globStat.isDir())
++          for (FileStatus stat : fs.listStatus(globStat.getPath(), inputFilter))
++          {
++            result.add(stat);
++          }
++        else {
++          result.add(globStat);
++        }
++      }
++    }
++    if (!errors.isEmpty()) {
++      throw new InvalidInputException(errors);
++    }
++    return (FileStatus[])result.toArray(new FileStatus[result.size()]);
++  }
++
++  public long getLen(JobConf job, FileStatus file)
++    throws IOException
++  {
++    long all = 0L;
++    if (file.isDir()) {
++      FileStatus[] files = listStatus(job, file);
++      for (FileStatus subfile : files)
++        all += getLen(job, subfile);
++    }
++    else {
++      all += file.getLen();
++    }
++    return all;
++  }
++
++  public ArrayList<FileSplit> getSplits(JobConf job, FileStatus dirFile, long totalSize, int numSplits)
++    throws IOException
++  {
++    ArrayList fsArr = new ArrayList(numSplits);
++    FileStatus[] files = listStatus(job, dirFile);
++    long goalSize = totalSize / (numSplits == 0 ? 1 : numSplits);
++    long minSize = Math.max(job.getLong("mapred.min.split.size", 1), 1);
++
++    NetworkTopology clusterMap = new NetworkTopology();
++    for (FileStatus file : files) {
++      if (!file.isDir()) {
++        Path path = file.getPath();
++        FileSystem fs = path.getFileSystem(job);
++        long length = file.getLen();
++        BlockLocation[] blkLocations = fs.getFileBlockLocations(file, 0L, length);
++
++        if ((length != 0L) && (isSplitable(fs, path))) {
++          long blockSize = file.getBlockSize();
++          long splitSize = computeSplitSize(goalSize, minSize, blockSize);
++
++          long bytesRemaining = length;
++          while (bytesRemaining / splitSize > 1.1) {
++            String[] splitHosts = getSplitHosts(blkLocations, length - bytesRemaining, splitSize, clusterMap);
++
++            fsArr.add(new FileSplit(path, length - bytesRemaining, splitSize, splitHosts));
++
++            bytesRemaining -= splitSize;
++          }
++
++          if (bytesRemaining != 0L) {
++            fsArr.add(new FileSplit(path, length - bytesRemaining, bytesRemaining, blkLocations[(blkLocations.length - 1)].getHosts()));
++          }
++
++        }
++        else if (length != 0L) {
++          String[] splitHosts = getSplitHosts(blkLocations, 0L, length, clusterMap);
++
++          fsArr.add(new FileSplit(path, 0L, length, splitHosts));
++        }
++        else {
++          fsArr.add(new FileSplit(path, 0L, length, new String[0]));
++        }
++      } else {
++        fsArr.addAll(getSplits(job, file, totalSize, numSplits));
++      }
++
++    }
++
++    return fsArr;
++  }
++
++  public InputSplit[] getSplits(JobConf job, int numSplits)
++    throws IOException
++  {
++    FileStatus[] files = listStatus(job);
++
++    long totalSize = 0L;
++    for (FileStatus file : files) {
++      if (file.isDir()) {
++        totalSize += getLen(job, file);
++      }
++      totalSize += file.getLen();
++    }
++
++    long goalSize = totalSize / (numSplits == 0 ? 1 : numSplits);
++    long minSize = Math.max(job.getLong("mapred.min.split.size", 1), 1);
++
++    ArrayList splits = new ArrayList(numSplits);
++    NetworkTopology clusterMap = new NetworkTopology();
++    for (FileStatus file : files) {
++      if (!file.isDir()) {
++        Path path = file.getPath();
++        FileSystem fs = path.getFileSystem(job);
++        long length = file.getLen();
++        BlockLocation[] blkLocations = fs.getFileBlockLocations(file, 0L, length);
++
++        if ((length != 0L) && (isSplitable(fs, path))) {
++          long blockSize = file.getBlockSize();
++          long splitSize = computeSplitSize(goalSize, minSize, blockSize);
++
++          long bytesRemaining = length;
++          while (bytesRemaining / splitSize > 1.1D) {
++            String[] splitHosts = getSplitHosts(blkLocations, length - bytesRemaining, splitSize, clusterMap);
++
++            splits.add(new FileSplit(path, length - bytesRemaining, splitSize, splitHosts));
++
++            bytesRemaining -= splitSize;
++          }
++
++          if (bytesRemaining != 0L) {
++            splits.add(new FileSplit(path, length - bytesRemaining, bytesRemaining, blkLocations[(blkLocations.length - 1)].getHosts()));
++          }
++
++        }
++        else if (length != 0L) {
++          String[] splitHosts = getSplitHosts(blkLocations, 0L, length, clusterMap);
++
++          splits.add(new FileSplit(path, 0L, length, splitHosts));
++        }
++        else {
++          splits.add(new FileSplit(path, 0L, length, new String[0]));
++        }
++      } else {
++        splits.addAll(getSplits(job, file, totalSize, numSplits));
++      }
++    }
++    LOG.debug("Total # of splits: " + splits.size());
++    return (InputSplit[])splits.toArray(new FileSplit[splits.size()]);
++  }
++
++  public boolean validateInput(FileSystem fs, HiveConf conf, ArrayList<FileStatus> files)
++    throws IOException
++  {
++    if (files.size() <= 0) {
++      return false;
++    }
++    for (int fileId = 0; fileId < files.size(); fileId++) {
++      try {
++        NetcdfFile ncfile = NetcdfFile.open(((FileStatus)files.get(fileId)).getPath().toString());
++        ncfile.close();
++      } catch (IOException e) {
++        return false;
++      }
++    }
++    return true;
++  }
++
++  private static class MultiPathFilter
++    implements PathFilter
++  {
++    private final List<PathFilter> filters;
++
++    public MultiPathFilter(List<PathFilter> filters)
++    {
++      this.filters = filters;
++    }
++
++    public boolean accept(Path path) {
++      for (PathFilter filter : this.filters) {
++        if (!filter.accept(path)) {
++          return false;
++        }
++      }
++      return true;
++    }
++  }
++
++  static class NcFileRecordReader
++    implements RecordReader<LongWritable, Text>
++  {
++    private final long start;
++    private final long end;
++    private NetcdfFile ncfile = null;
++    private final String filename;
++    private int count=0;
++    private Index idx = null;
++    private final String seprator;
++    private final ArrayList<Array> varArr;
++    private final ArrayList<Variable> vars;
++    private final ArrayList<Array> dimArr;
++    int[] dimMap;
++    int[] types;
++    int[] shrinkedTypes;
++    int validIDsCount;
++    int[] shape;
++    int[] validShape;
++    int[] shapeDivider;
++    int[] validShapeDivider;
++    int totalSize=0;
++    int dimsSize=0;
++    public Double equalValue=null;
++    public HashMap<String, Double> greaterValueMap = new HashMap();
++    public HashMap<String, Boolean> greaterBoolMap = new HashMap();
++    public HashMap<String, Double> lessValueMap = new HashMap();
++    public HashMap<String, Boolean> lessBoolMap = new HashMap();
++    public HashMap<String, ArrayList<Double>> notEqualMap = new HashMap();
++    public HashSet<String> fixs = new HashSet();
++    public HashSet<String> cols = new HashSet();
++    public HashMap<String,ArrayList<Integer>> validIndexes=new HashMap();
++    public ArrayList<ArrayList<Integer>> validIndexArr;
++    boolean noResult=false;
++    boolean notEqual(Double input,Double num){
++        return input!=num?true:false;
++    }
++    boolean greaterEqual(Double input,Double num){
++        return input>=num?true:false;
++    }
++    boolean greater(Double input,Double num){
++        return input>num?true:false;
++    }
++    boolean lessEqual(Double input,Double num){
++        return input<=num?true:false;
++    }
++    boolean less(Double input,Double num){
++        return input<num?true:false;
++    }
++    boolean eval_value(Double val,String col,Double gValue,Double lValue,ArrayList<Double> nValues){
++        if(gValue!=null){
++            if(greaterBoolMap.get(col)==true){
++                if(!greaterEqual(val,gValue)){
++                    return false;
++                }
++            }else{
++                if(!greater(val,gValue)){
++                    return false;
++                }
++            }
++        }
++        if(lValue!=null){
++            if(lessBoolMap.get(col)==true){
++                if(!lessEqual(val,lValue)){
++                    return false;
++                }
++            }else{
++                if(!less(val,lValue)){
++                    return false;
++                }
++            }
++        }
++        if(nValues!=null){
++            for(Double d:nValues){
++                if(!notEqual(val,d)){
++                    return false;
++                }
++            }
++        }
++        return true;
++    }
++    void evalDimensionVariable(Variable v,String col) throws IOException{
++        if(v.getDimensions().size()>1)
++            return;
++        Array arr=v.read();
++        long size=arr.getSize();
++        boolean valid=true;
++        ArrayList<Integer> validIndex=new ArrayList<Integer>();
++        Double gValue=greaterValueMap.get(col);
++        Double lValue=lessValueMap.get(col);
++        ArrayList<Double> nValues=notEqualMap.get(col);
++        Double val=null;
++        for(int i=0;i<size;i++){
++            val=new Double(arr.getObject(i).toString());
++            if(!eval_value(val,col,gValue,lValue,nValues)){
++                continue;
++            }
++            validIndex.add(i);    
++        }
++        if(validIndex.size()==0)
++            noResult=true;
++        validIndexes.put(col,validIndex);
++    }
++    void updateGreaterValueMap(String col,Double value,Boolean equal){
++        Double old=greaterValueMap.get(col);
++        if(old==null){
++            this.greaterValueMap.put(col, value);
++            this.greaterBoolMap.put(col, equal);
++        }else{
++            if(value>old){
++                this.greaterValueMap.put(col, value);
++                this.greaterBoolMap.put(col, equal);
++            }else if(value==old){
++                if(!equal)
++                    this.greaterBoolMap.put(col,equal);
++            }
++        }
++    }
++    void updateLessValueMap(String col,Double value,Boolean equal){
++        Double old=lessValueMap.get(col);
++        if(old==null){
++            this.lessValueMap.put(col, value);
++            this.lessBoolMap.put(col, equal);
++        }else{
++            if(value<old){
++                this.lessValueMap.put(col, value);
++                this.lessBoolMap.put(col, equal);
++            }else if(value==old){
++                if(!equal)
++                    this.lessBoolMap.put(col,equal);
++            }
++        }
++    }
++    public void updateConditions(String col, Double value, GenericUDFBaseCompare op, boolean rightOrder) {
++      if ((op instanceof GenericUDFOPEqual)) {
++        updateGreaterValueMap(col,value,Boolean.valueOf(true));
++        updateLessValueMap(col,value,Boolean.valueOf(true));
++        if(this.equalValue==null){
++            this.equalValue=value;
++        }else{
++            if (value!=equalValue){
++                this.noResult=true;
++                return;
++            }
++        }
++        this.fixs.add(col);
++        this.cols.add(col);
++      } else {
++        if((op instanceof GenericUDFOPNotEqual)){
++          if(notEqualMap.get(col)==null){
++            ArrayList<Double> list=new ArrayList<Double>();
++            list.add(value);
++            notEqualMap.put(col,list);
++          }else{
++            notEqualMap.get(col).add(value);
++          }
++          this.cols.add(col); 
++          return; 
++        }
++        if (this.fixs.contains(col)) {
++          return;
++        }
++        this.cols.add(col);
++        if (rightOrder) {
++          if ((op instanceof GenericUDFOPEqualOrGreaterThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(true));
++          } else if ((op instanceof GenericUDFOPGreaterThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(false));
++          } else if ((op instanceof GenericUDFOPEqualOrLessThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(true));
++          } else if ((op instanceof GenericUDFOPLessThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(false));
++          }
++        }
++        else if ((op instanceof GenericUDFOPEqualOrGreaterThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(true));
++        } else if ((op instanceof GenericUDFOPGreaterThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(false));
++        } else if ((op instanceof GenericUDFOPEqualOrLessThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(true));
++        } else if ((op instanceof GenericUDFOPLessThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(false));
++        }
++      }
++    }
++
++    public void parseExprNodeDesc(ExprNodeDesc node)
++    {
++      GenericUDF udf = ((ExprNodeGenericFuncDesc)node).getGenericUDF();
++      if ((udf instanceof GenericUDFOPOr)) {
++        return;
++      }
++      if ((udf instanceof GenericUDFOPAnd)) {
++        for (ExprNodeDesc ch : node.getChildren()) {
++          parseExprNodeDesc(ch);
++        }
++      }
++      else if (((udf instanceof GenericUDFBaseCompare)) && 
++        (!(udf instanceof GenericUDFOPNotEqual))) {
++        String col = null; String value = null;
++        boolean order = false;
++        for (int i = 0; i < node.getChildren().size(); i++) {
++          ExprNodeDesc ch2 = (ExprNodeDesc)node.getChildren().get(i);
++
++          if ((ch2 instanceof ExprNodeColumnDesc)) {
++            col = ch2.getExprString();
++            if (i == 0) {
++              order = true;
++            }
++          }
++          if (((ch2 instanceof ExprNodeGenericFuncDesc)) && 
++            ((((ExprNodeGenericFuncDesc)ch2).getGenericUDF() instanceof GenericUDFBridge))) {
++            value = new StringBuilder().append("-").append(((ExprNodeDesc)ch2.getChildren().get(0)).getExprString()).toString();
++          }
++
++          if ((ch2 instanceof ExprNodeConstantDesc)) {
++            value = ch2.getExprString();
++          }
++        }
++        if ((col != null) && (value != null))
++          try {
++            updateConditions(col, new Double(value), (GenericUDFBaseCompare)udf, order);
++          } catch (NumberFormatException e) {
++            System.err.println(new StringBuilder().append("NumberForamtException in updateRange:").append(node.getExprString()).toString());
++          }
++      }
++    }
++
++    public NcFileRecordReader(Configuration job, InputSplit genericSplit)
++      throws IOException
++    {
++      FileSplit split = (FileSplit)genericSplit;
++      this.start = split.getStart();
++      this.end = (this.start + split.getLength());
++      this.ncfile = NetcdfFile.open(split.getPath().toString());
++      this.filename = split.getPath().getName();
++      this.seprator = "\t";
++      ArrayList notSkipIDs = ColumnProjectionUtils.getReadColumnIDs(job);
++      LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc = ColumnProjectionUtils.getPathToNodeDesc();
++      String pathString;
++      if (pathToNodeDesc != null) {
++        pathString = split.getPath().toString();
++        for (String key : pathToNodeDesc.keySet())
++        {
++          if (pathString.startsWith(key)) {
++            for (ExprNodeDesc node : (ArrayList<ExprNodeDesc>)pathToNodeDesc.get(key))
++            {
++              parseExprNodeDesc(node);
++            }
++            break;
++          }
++        }
++      }
++      ArrayList varList = (ArrayList)this.ncfile.getVariables();
++
++      if (notSkipIDs.size() == 0) {
++        for (int i = 0; i < varList.size(); i++) {
++          notSkipIDs.add(Integer.valueOf(i));
++        }
++      }
++      Variable mainVar = null;
++      int mainVarPos = 0;
++      this.varArr = new ArrayList();
++      this.vars = new ArrayList();
++      this.dimArr = new ArrayList();
++      Variable var;
++      for (int i = 0; i < notSkipIDs.size(); i++) {
++        var = (Variable)varList.get(((Integer)notSkipIDs.get(i)).intValue());
++        if ((var.getDimensions().size() != 1) || (!var.getDimension(0).getName().equals(var.getName())))
++        {
++          if (mainVar == null) {
++            mainVar = var;
++            mainVarPos = i;
++          } else {
++            List<Dimension> varDs = var.getDimensions();
++            for (Dimension d : varDs) {
++              if (d.getName().equals(mainVar.getName())) {
++                mainVar = var;
++                mainVarPos = i;
++                break;
++              }
++            }
++          }
++        }
++      }
++      if (mainVar == null) {
++        mainVar = (Variable)varList.get(((Integer)notSkipIDs.get(0)).intValue());
++        mainVarPos = 0;
++      }
++      this.vars.add(mainVar);
++
++      this.types = new int[notSkipIDs.size()];
++      this.dimMap = new int[mainVar.getDimensions().size()];
++      this.types[mainVarPos] = 2;
++
++      for (int i = 0; i < notSkipIDs.size(); i++)
++        if (i != mainVarPos)
++        {
++          var = (Variable)varList.get(((Integer)notSkipIDs.get(i)).intValue());
++          boolean isDimension = false;
++          int size = mainVar.getDimensions().size();
++          for (int j = 0; j < size; j++) {
++            if (mainVar.getDimension(j).getName().equals(var.getName())) {
++              this.types[i] = 1;
++              this.dimArr.add(var.read());
++
++              this.dimMap[(this.dimArr.size() - 1)] = j;
++              isDimension = true;
++            }
++          }
++          if (!isDimension)
++          {
++            if (var.getDimensions().size() == mainVar.getDimensions().size()) {
++              boolean isSame = true;
++              for (int j = 0; j < var.getDimensions().size(); j++) {
++                if (!var.getDimension(j).getName().equals(mainVar.getDimension(j).getName())) {
++                  isSame = false;
++                  break;
++                }
++              }
++              if (isSame) {
++                this.vars.add(var);
++
++                this.types[i] = 2;
++              }
++            }
++          }
++        }
++      ArrayList validIDs = new ArrayList();
++      this.shrinkedTypes = new int[this.types.length];
++      int pos = 0;
++      for (int i = 0; i < this.types.length; i++) {
++        if (this.types[i] != 0) {
++          this.shrinkedTypes[pos] = this.types[i];
++          validIDs.add(notSkipIDs.get(i));
++          pos++;
++        }
++      }
++      org.apache.hadoop.hive.contrib.serde2.NcFileSerDe.notSkipIDsFromInputFormat = validIDs;
++      this.validIDsCount = validIDs.size();
++
++      for (String key : this.cols) {
++          evalDimensionVariable(this.ncfile.findVariable(key),key);
++      }
++      if(this.noResult)
++          return;
++
++      int size = mainVar.getDimensions().size();
++      this.dimsSize=size;
++      this.shape = new int[size];
++      this.validShape=new int[size];
++      this.shapeDivider=new int[size];
++      this.validShapeDivider=new int[size];
++      this.totalSize=1;
++      this.validIndexArr=new ArrayList();
++      for (int j = 0; j < size; j++) {
++        Dimension d = (Dimension)mainVar.getDimensions().get(size-1-j);
++        if(this.cols.contains(d.getName())){
++            validIndexArr.add(validIndexes.get(d.getName()));
++        }else{
++            ArrayList<Integer> arr=new ArrayList<Integer>();
++            for(int i=0;i<d.getLength();i++){
++                arr.add(i);
++            }
++            validIndexArr.add(arr);
++        }
++        this.shape[j] = d.getLength();
++        if(validIndexes.get(d.getName())==null)
++            this.validShape[j]=d.getLength();
++        else
++            this.validShape[j]=validIndexes.get(d.getName()).size();
++
++        if(j==0){
++            shapeDivider[j]=1;
++            validShapeDivider[j]=1;
++        }else{
++            shapeDivider[j]=shapeDivider[j-1]*shape[j-1];
++            validShapeDivider[j]=validShapeDivider[j-1]*validShape[j-1];
++        }
++        totalSize*=validShape[j];
++      }
++      System.err.println("total index size: "+totalSize);
++        for (int i = 0; i < this.vars.size(); i++)
++          this.varArr.add(((Variable)this.vars.get(i)).read());
++    }
++
++    public synchronized boolean next(LongWritable key, Text value)
++      throws IOException
++    {
++      boolean getOne=true;
++      StringBuilder result = null;
++      do{
++          if (this.noResult || (this.count >= this.totalSize)) {
++            key = null;
++            value = null;
++            return false;
++          }
++
++          int [] indexArr=new int[this.dimsSize];
++          int remain=this.count;
++          int newIndex=0;
++          for(int i=0;i<this.dimsSize;i++){
++              indexArr[i]=remain/validShapeDivider[this.dimsSize-1-i];
++              remain=remain%validShapeDivider[this.dimsSize-1-i];
++              newIndex+=validIndexArr.get(this.dimsSize-1-i).get(indexArr[i])*shapeDivider[this.dimsSize-1-i];
++          }
++          int dimPos = 0;
++          int varPos = 0;
++          int pos = 0;
++          String varName=null;
++          Object val=null;
++          result = new StringBuilder();
++          for (int i = 0; i < this.validIDsCount; i++) {
++            if(this.shrinkedTypes[i]==1) {
++              pos=this.dimMap[dimPos];
++              result.append(((Array)this.dimArr.get(dimPos)).getObject(validIndexArr.get(this.dimsSize-1-pos).get(indexArr[pos])));
++              dimPos++;
++            }else{
++              varName=this.vars.get(varPos).getName();
++              val=((Array)this.varArr.get(varPos)).getObject(newIndex);
++              if(this.cols.contains(varName)){
++                  Double gValue=greaterValueMap.get(varName);
++                  Double lValue=lessValueMap.get(varName);
++                  ArrayList<Double> nValues=notEqualMap.get(varName);
++                  if(!eval_value(new Double(val.toString()),varName,gValue,lValue,nValues)){
++                    getOne=false;
++                    this.count += 1;
++//                    System.err.println("filtered value :"+val);
++                    break;
++                  }
++              }
++              result.append(val.toString());
++              varPos++;
++            }
++            if (getOne && i != this.validIDsCount - 1) {
++              result.append(this.seprator);
++            }
++          }
++
++      }while(!getOne);
++      key.set(this.count);
++      value.set(result.toString());
++      this.count += 1;
++      return true;
++    }
++
++    public LongWritable createKey() {
++      return new LongWritable();
++    }
++
++    public Text createValue() {
++      return new Text();
++    }
++
++    public synchronized long getPos() throws IOException {
++      return this.count;
++    }
++
++    public void close() throws IOException {
++      if (this.ncfile != null)
++        this.ncfile.close();
++    }
++
++    public float getProgress() throws IOException
++    {
++      if (this.count >= this.totalSize) {
++        return 1.0F;
++      }
++      return 1.0F* this.count / (float)this.totalSize;
++    }
++  }
++}
+diff -urN src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java
+--- src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java	1969-12-31 19:00:00.000000000 -0500
++++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java	2013-02-27 23:09:31.947539494 -0500
+@@ -0,0 +1,678 @@
++package org.apache.hadoop.hive.contrib.fileformat.netcdf;
++
++import java.io.IOException;
++import java.io.PrintStream;
++import java.util.ArrayList;
++import java.util.HashMap;
++import java.util.HashSet;
++import java.util.LinkedHashMap;
++import java.util.List;
++import org.apache.commons.logging.Log;
++import org.apache.hadoop.conf.Configuration;
++import org.apache.hadoop.fs.BlockLocation;
++import org.apache.hadoop.fs.FileStatus;
++import org.apache.hadoop.fs.FileSystem;
++import org.apache.hadoop.fs.Path;
++import org.apache.hadoop.fs.PathFilter;
++import org.apache.hadoop.hive.conf.HiveConf;
++import org.apache.hadoop.hive.ql.io.InputFormatChecker;
++import org.apache.hadoop.hive.ql.plan.ExprNodeColumnDesc;
++import org.apache.hadoop.hive.ql.plan.ExprNodeConstantDesc;
++import org.apache.hadoop.hive.ql.plan.ExprNodeDesc;
++import org.apache.hadoop.hive.ql.plan.ExprNodeGenericFuncDesc;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDF;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBaseCompare;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFBridge;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPAnd;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqual;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqualOrGreaterThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPEqualOrLessThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPGreaterThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPLessThan;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPNotEqual;
++import org.apache.hadoop.hive.ql.udf.generic.GenericUDFOPOr;
++import org.apache.hadoop.hive.serde2.ColumnProjectionUtils;
++import org.apache.hadoop.io.LongWritable;
++import org.apache.hadoop.io.Text;
++import org.apache.hadoop.mapred.FileInputFormat;
++import org.apache.hadoop.mapred.FileSplit;
++import org.apache.hadoop.mapred.InputSplit;
++import org.apache.hadoop.mapred.InvalidInputException;
++import org.apache.hadoop.mapred.JobConf;
++import org.apache.hadoop.mapred.RecordReader;
++import org.apache.hadoop.mapred.Reporter;
++import org.apache.hadoop.net.NetworkTopology;
++import ucar.ma2.Array;
++import ucar.ma2.Index;
++import ucar.ma2.InvalidRangeException;
++import ucar.ma2.Section;
++import ucar.nc2.Dimension;
++import ucar.nc2.NetcdfFile;
++import ucar.nc2.Variable;
++
++public class NcFileRangeInputFormat extends FileInputFormat<LongWritable, Text>
++  implements InputFormatChecker
++{
++  private static final double SPLIT_SLOP = 1.1;
++  private  long minSplitSize = 1;
++  private static final PathFilter hiddenFileFilter = new PathFilter() {
++    public boolean accept(Path p) {
++      String name = p.getName();
++      return (!name.startsWith("_")) && (!name.startsWith("."));
++    }
++  };
++
++  protected boolean isSplitable(FileSystem fs, Path filename)
++  {
++    return false;
++  }
++
++  public RecordReader<LongWritable, Text> getRecordReader(InputSplit split, JobConf conf, Reporter reporter)
++    throws IOException
++  {
++    reporter.setStatus(split.toString());
++    return new NcFileRecordReader(conf, split);
++  }
++
++  protected FileStatus[] listStatus(JobConf job, FileStatus file) throws IOException
++  {
++    Path p = file.getPath();
++
++    List result = new ArrayList();
++    List errors = new ArrayList();
++
++    List filters = new ArrayList();
++    filters.add(hiddenFileFilter);
++    PathFilter jobFilter = getInputPathFilter(job);
++    if (jobFilter != null) {
++      filters.add(jobFilter);
++    }
++    PathFilter inputFilter = new MultiPathFilter(filters);
++    FileSystem fs = p.getFileSystem(job);
++    FileStatus[] matches = fs.globStatus(p, inputFilter);
++    if (matches == null)
++      errors.add(new IOException("Input path does not exist: " + p));
++    else if (matches.length == 0) {
++      errors.add(new IOException("Input Pattern " + p + " matches 0 files"));
++    }
++    else {
++      for (FileStatus globStat : matches) {
++        if (globStat.isDir())
++          for (FileStatus stat : fs.listStatus(globStat.getPath(), inputFilter))
++          {
++            result.add(stat);
++          }
++        else {
++          result.add(globStat);
++        }
++      }
++    }
++    if (!errors.isEmpty()) {
++      throw new InvalidInputException(errors);
++    }
++    return (FileStatus[])result.toArray(new FileStatus[result.size()]);
++  }
++
++  public long getLen(JobConf job, FileStatus file)
++    throws IOException
++  {
++    long all = 0L;
++    if (file.isDir()) {
++      FileStatus[] files = listStatus(job, file);
++      for (FileStatus subfile : files)
++        all += getLen(job, subfile);
++    }
++    else {
++      all += file.getLen();
++    }
++    return all;
++  }
++
++  public ArrayList<FileSplit> getSplits(JobConf job, FileStatus dirFile, long totalSize, int numSplits)
++    throws IOException
++  {
++    ArrayList fsArr = new ArrayList(numSplits);
++    FileStatus[] files = listStatus(job, dirFile);
++    long goalSize = totalSize / (numSplits == 0 ? 1 : numSplits);
++    long minSize = Math.max(job.getLong("mapred.min.split.size", 1), 1);
++
++    NetworkTopology clusterMap = new NetworkTopology();
++    for (FileStatus file : files) {
++      if (!file.isDir()) {
++        Path path = file.getPath();
++        FileSystem fs = path.getFileSystem(job);
++        long length = file.getLen();
++        BlockLocation[] blkLocations = fs.getFileBlockLocations(file, 0L, length);
++
++        if ((length != 0L) && (isSplitable(fs, path))) {
++          long blockSize = file.getBlockSize();
++          long splitSize = computeSplitSize(goalSize, minSize, blockSize);
++
++          long bytesRemaining = length;
++          while (bytesRemaining / splitSize > 1.1) {
++            String[] splitHosts = getSplitHosts(blkLocations, length - bytesRemaining, splitSize, clusterMap);
++
++            fsArr.add(new FileSplit(path, length - bytesRemaining, splitSize, splitHosts));
++
++            bytesRemaining -= splitSize;
++          }
++
++          if (bytesRemaining != 0L) {
++            fsArr.add(new FileSplit(path, length - bytesRemaining, bytesRemaining, blkLocations[(blkLocations.length - 1)].getHosts()));
++          }
++
++        }
++        else if (length != 0L) {
++          String[] splitHosts = getSplitHosts(blkLocations, 0L, length, clusterMap);
++
++          fsArr.add(new FileSplit(path, 0L, length, splitHosts));
++        }
++        else {
++          fsArr.add(new FileSplit(path, 0L, length, new String[0]));
++        }
++      } else {
++        fsArr.addAll(getSplits(job, file, totalSize, numSplits));
++      }
++
++    }
++
++    return fsArr;
++  }
++
++  public InputSplit[] getSplits(JobConf job, int numSplits)
++    throws IOException
++  {
++    FileStatus[] files = listStatus(job);
++
++    long totalSize = 0L;
++    for (FileStatus file : files) {
++      if (file.isDir()) {
++        totalSize += getLen(job, file);
++      }
++      totalSize += file.getLen();
++    }
++
++    long goalSize = totalSize / (numSplits == 0 ? 1 : numSplits);
++    long minSize = Math.max(job.getLong("mapred.min.split.size", 1), 1);
++
++    ArrayList splits = new ArrayList(numSplits);
++    NetworkTopology clusterMap = new NetworkTopology();
++    for (FileStatus file : files) {
++      if (!file.isDir()) {
++        Path path = file.getPath();
++        FileSystem fs = path.getFileSystem(job);
++        long length = file.getLen();
++        BlockLocation[] blkLocations = fs.getFileBlockLocations(file, 0L, length);
++
++        if ((length != 0L) && (isSplitable(fs, path))) {
++          long blockSize = file.getBlockSize();
++          long splitSize = computeSplitSize(goalSize, minSize, blockSize);
++
++          long bytesRemaining = length;
++          while (bytesRemaining / splitSize > 1.1D) {
++            String[] splitHosts = getSplitHosts(blkLocations, length - bytesRemaining, splitSize, clusterMap);
++
++            splits.add(new FileSplit(path, length - bytesRemaining, splitSize, splitHosts));
++
++            bytesRemaining -= splitSize;
++          }
++
++          if (bytesRemaining != 0L) {
++            splits.add(new FileSplit(path, length - bytesRemaining, bytesRemaining, blkLocations[(blkLocations.length - 1)].getHosts()));
++          }
++
++        }
++        else if (length != 0L) {
++          String[] splitHosts = getSplitHosts(blkLocations, 0L, length, clusterMap);
++
++          splits.add(new FileSplit(path, 0L, length, splitHosts));
++        }
++        else {
++          splits.add(new FileSplit(path, 0L, length, new String[0]));
++        }
++      } else {
++        splits.addAll(getSplits(job, file, totalSize, numSplits));
++      }
++    }
++    LOG.debug("Total # of splits: " + splits.size());
++    return (InputSplit[])splits.toArray(new FileSplit[splits.size()]);
++  }
++
++  public boolean validateInput(FileSystem fs, HiveConf conf, ArrayList<FileStatus> files)
++    throws IOException
++  {
++    if (files.size() <= 0) {
++      return false;
++    }
++    for (int fileId = 0; fileId < files.size(); fileId++) {
++      try {
++        NetcdfFile ncfile = NetcdfFile.open(((FileStatus)files.get(fileId)).getPath().toString());
++        ncfile.close();
++      } catch (IOException e) {
++        return false;
++      }
++    }
++    return true;
++  }
++
++  private static class MultiPathFilter
++    implements PathFilter
++  {
++    private final List<PathFilter> filters;
++
++    public MultiPathFilter(List<PathFilter> filters)
++    {
++      this.filters = filters;
++    }
++
++    public boolean accept(Path path) {
++      for (PathFilter filter : this.filters) {
++        if (!filter.accept(path)) {
++          return false;
++        }
++      }
++      return true;
++    }
++  }
++
++  static class NcFileRecordReader
++    implements RecordReader<LongWritable, Text>
++  {
++    private final long start;
++    private final long end;
++    private NetcdfFile ncfile = null;
++    private final String filename;
++    private int count;
++    private Index idx = null;
++    private final String seprator;
++    private final ArrayList<Array> varArr;
++    private final ArrayList<Variable> vars;
++    private final ArrayList<Array> dimArr;
++    int[] dimMap;
++    int[] types;
++    int[] shrinkedTypes;
++    int validIDsCount;
++    int[] origin;
++    int[] shape;
++    VariableSlicer vs = new VariableSlicer();
++    public HashMap<String, Double> greaterValueMap = new HashMap();
++    public HashMap<String, Boolean> greaterBoolMap = new HashMap();
++    public HashMap<String, Boolean> lessBoolMap = new HashMap();
++    public HashMap<String, Double> lessValueMap = new HashMap();
++    public HashSet<String> fixs = new HashSet();
++    public HashSet<String> cols = new HashSet();
++    
++    boolean greaterEqual(Double input,Double num){
++        return input>=num?true:false;
++    }
++    boolean greater(Double input,Double num){
++        return input>num?true:false;
++    }
++    boolean lessEqual(Double input,Double num){
++        return input<=num?true:false;
++    }
++    boolean less(Double input,Double num){
++        return input<num?true:false;
++    }
++    boolean eval_value(Double val,String col,Double gValue,Double lValue){
++        if(gValue!=null){
++            if(greaterBoolMap.get(col)==true){
++                if(!greaterEqual(val,gValue)){
++                    return false;
++                }
++            }else{
++                if(!greater(val,gValue)){
++                    return false;
++                }
++            }
++        }
++        if(lValue!=null){
++            if(lessBoolMap.get(col)==true){
++                if(!lessEqual(val,lValue)){
++                    return false;
++                }
++            }else{
++                if(!less(val,lValue)){
++                    return false;
++                }
++            }
++        }
++        return true;
++    }
++
++    void updateGreaterValueMap(String col,Double value,Boolean equal){
++        Double old=greaterValueMap.get(col);
++        if(old==null){
++            this.greaterValueMap.put(col, value);
++            this.greaterBoolMap.put(col, equal);
++        }else{
++            if(value>old){
++                this.greaterValueMap.put(col, value);
++                this.greaterBoolMap.put(col, equal);
++            }else if(value==old){
++                if(!equal)
++                    this.greaterBoolMap.put(col,equal);
++            }
++        }
++    }
++    void updateLessValueMap(String col,Double value,Boolean equal){
++        Double old=lessValueMap.get(col);
++        if(old==null){
++            this.lessValueMap.put(col, value);
++            this.lessBoolMap.put(col, equal);
++        }else{
++            if(value<old){
++                this.lessValueMap.put(col, value);
++                this.lessBoolMap.put(col, equal);
++            }else if(value==old){
++                if(!equal)
++                    this.lessBoolMap.put(col,equal);
++            }
++        }
++    }
++
++    public void updateRange(String col, Double value, GenericUDFBaseCompare op, boolean rightOrder) {
++      if ((op instanceof GenericUDFOPEqual)) {
++        updateGreaterValueMap(col,value,Boolean.valueOf(true));
++        updateLessValueMap(col,value,Boolean.valueOf(true));
++        this.fixs.add(col);
++        this.cols.add(col);
++      } else {
++        if (this.fixs.contains(col)) {
++          return;
++        }
++        this.cols.add(col);
++        if (rightOrder) {
++          if ((op instanceof GenericUDFOPEqualOrGreaterThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(true));
++          } else if ((op instanceof GenericUDFOPGreaterThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(false));
++          } else if ((op instanceof GenericUDFOPEqualOrLessThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(true));
++          } else if ((op instanceof GenericUDFOPLessThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(false));
++          }
++        }
++        else if ((op instanceof GenericUDFOPEqualOrGreaterThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(true));
++        } else if ((op instanceof GenericUDFOPGreaterThan)) {
++            updateLessValueMap(col,value,Boolean.valueOf(false));
++        } else if ((op instanceof GenericUDFOPEqualOrLessThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(true));
++        } else if ((op instanceof GenericUDFOPLessThan)) {
++            updateGreaterValueMap(col,value,Boolean.valueOf(false));
++        }
++      }
++    }
++
++    public void parseExprNodeDesc(ExprNodeDesc node)
++    {
++      GenericUDF udf = ((ExprNodeGenericFuncDesc)node).getGenericUDF();
++      if ((udf instanceof GenericUDFOPOr)) {
++        return;
++      }
++      if ((udf instanceof GenericUDFOPAnd)) {
++        for (ExprNodeDesc ch : node.getChildren()) {
++          parseExprNodeDesc(ch);
++        }
++      }
++      else if (((udf instanceof GenericUDFBaseCompare)) && 
++        (!(udf instanceof GenericUDFOPNotEqual))) {
++        String col = null; String value = null;
++        boolean order = false;
++        for (int i = 0; i < node.getChildren().size(); i++) {
++          ExprNodeDesc ch2 = (ExprNodeDesc)node.getChildren().get(i);
++
++          if ((ch2 instanceof ExprNodeColumnDesc)) {
++            col = ch2.getExprString();
++            if (i == 0) {
++              order = true;
++            }
++          }
++          if (((ch2 instanceof ExprNodeGenericFuncDesc)) && 
++            ((((ExprNodeGenericFuncDesc)ch2).getGenericUDF() instanceof GenericUDFBridge))) {
++            value = new StringBuilder().append("-").append(((ExprNodeDesc)ch2.getChildren().get(0)).getExprString()).toString();
++          }
++
++          if ((ch2 instanceof ExprNodeConstantDesc)) {
++            value = ch2.getExprString();
++          }
++        }
++        if ((col != null) && (value != null))
++          try {
++            updateRange(col, new Double(value), (GenericUDFBaseCompare)udf, order);
++          } catch (NumberFormatException e) {
++            System.err.println(new StringBuilder().append("NumberForamtException in updateRange:").append(node.getExprString()).toString());
++          }
++      }
++    }
++
++    public NcFileRecordReader(Configuration job, InputSplit genericSplit)
++      throws IOException
++    {
++      FileSplit split = (FileSplit)genericSplit;
++      this.start = split.getStart();
++      this.end = (this.start + split.getLength());
++      this.ncfile = NetcdfFile.open(split.getPath().toString());
++      this.filename = split.getPath().getName();
++      this.seprator = "\t";
++      ArrayList notSkipIDs = ColumnProjectionUtils.getReadColumnIDs(job);
++      LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc = ColumnProjectionUtils.getPathToNodeDesc();
++      String pathString;
++      if (pathToNodeDesc != null) {
++        pathString = split.getPath().toString();
++        for (String key : pathToNodeDesc.keySet())
++        {
++          if (pathString.startsWith(key)) {
++            for (ExprNodeDesc node : (ArrayList<ExprNodeDesc>)pathToNodeDesc.get(key))
++            {
++              parseExprNodeDesc(node);
++            }
++            break;
++          }
++        }
++      }
++      ArrayList varList = (ArrayList)this.ncfile.getVariables();
++
++      if (notSkipIDs.size() == 0) {
++        for (int i = 0; i < varList.size(); i++) {
++          notSkipIDs.add(Integer.valueOf(i));
++        }
++      }
++      Variable mainVar = null;
++      int mainVarPos = 0;
++      this.varArr = new ArrayList();
++      this.vars = new ArrayList();
++      this.dimArr = new ArrayList();
++      Variable var;
++      for (int i = 0; i < notSkipIDs.size(); i++) {
++        var = (Variable)varList.get(((Integer)notSkipIDs.get(i)).intValue());
++        if ((var.getDimensions().size() != 1) || (!var.getDimension(0).getName().equals(var.getName())))
++        {
++          if (mainVar == null) {
++            mainVar = var;
++            mainVarPos = i;
++          } else {
++            List<Dimension> varDs = var.getDimensions();
++            for (Dimension d : varDs) {
++              if (d.getName().equals(mainVar.getName())) {
++                mainVar = var;
++                mainVarPos = i;
++                break;
++              }
++            }
++          }
++        }
++      }
++      if (mainVar == null) {
++        mainVar = (Variable)varList.get(((Integer)notSkipIDs.get(0)).intValue());
++        mainVarPos = 0;
++      }
++      this.vars.add(mainVar);
++
++      this.types = new int[notSkipIDs.size()];
++      this.dimMap = new int[mainVar.getDimensions().size()];
++      this.types[mainVarPos] = 2;
++
++      for (int i = 0; i < notSkipIDs.size(); i++)
++        if (i != mainVarPos)
++        {
++          var = (Variable)varList.get(((Integer)notSkipIDs.get(i)).intValue());
++          boolean isDimension = false;
++          int size = mainVar.getDimensions().size();
++          for (int j = 0; j < size; j++) {
++            if (mainVar.getDimension(j).getName().equals(var.getName())) {
++              this.types[i] = 1;
++              this.dimArr.add(var.read());
++
++              this.dimMap[(this.dimArr.size() - 1)] = j;
++              isDimension = true;
++            }
++          }
++          if (!isDimension)
++          {
++            if (var.getDimensions().size() == mainVar.getDimensions().size()) {
++              boolean isSame = true;
++              for (int j = 0; j < var.getDimensions().size(); j++) {
++                if (!var.getDimension(j).getName().equals(mainVar.getDimension(j).getName())) {
++                  isSame = false;
++                  break;
++                }
++              }
++              if (isSame) {
++                this.vars.add(var);
++
++                this.types[i] = 2;
++              }
++            }
++          }
++        }
++      ArrayList validIDs = new ArrayList();
++      this.shrinkedTypes = new int[this.types.length];
++      int pos = 0;
++      for (int i = 0; i < this.types.length; i++) {
++        if (this.types[i] != 0) {
++          this.shrinkedTypes[pos] = this.types[i];
++          validIDs.add(notSkipIDs.get(i));
++          pos++;
++        }
++      }
++      org.apache.hadoop.hive.contrib.serde2.NcFileSerDe.notSkipIDsFromInputFormat = validIDs;
++      this.validIDsCount = validIDs.size();
++
++      for (String key : this.cols) {
++        this.vs.process(this.ncfile.findVariable(key), (Double)this.greaterValueMap.get(key), (Boolean)this.greaterBoolMap.get(key), (Double)this.lessValueMap.get(key), (Boolean)this.lessBoolMap.get(key));
++
++        if (!this.vs.getHasResult()) {
++          System.err.println(new StringBuilder().append(split.getPath().toString()).append(":no result returned!").toString());
++          return;
++        }
++      }
++      HashMap beginMap = this.vs.getBeginMap();
++      HashMap endMap = this.vs.getEndMap();
++
++      int size = mainVar.getDimensions().size();
++      this.origin = new int[size];
++      this.shape = new int[size];
++      for (int j = 0; j < size; j++) {
++        Dimension d = (Dimension)mainVar.getDimensions().get(j);
++        if (!beginMap.containsKey(d.getName())) {
++          beginMap.put(d.getName(), Integer.valueOf(0));
++          endMap.put(d.getName(), Integer.valueOf(d.getLength() - 1));
++          this.origin[j] = 0;
++          this.shape[j] = d.getLength();
++        } else {
++          this.origin[j] = ((Integer)beginMap.get(d.getName())).intValue();
++          this.shape[j] = (((Integer)endMap.get(d.getName())).intValue() - ((Integer)beginMap.get(d.getName())).intValue() + 1);
++        }
++        System.err.println(new StringBuilder().append(d.getName()).append(": idx->").append(j).append(" origin->").append(this.origin[j]).append(" shape->").append(this.shape[j]).toString());
++      }
++      try {
++        Section sc = new Section(this.origin, this.shape);
++        for (int i = 0; i < this.vars.size(); i++)
++          this.varArr.add(((Variable)this.vars.get(i)).read(sc));
++      }
++      catch (InvalidRangeException e)
++      {
++        e.printStackTrace();
++      }
++      this.idx = ((Array)this.varArr.get(0)).getIndex();
++    }
++
++    public synchronized boolean next(LongWritable key, Text value)
++      throws IOException{
++      boolean getOne=true;
++      StringBuilder result = null;
++      do{
++          if ((!this.vs.getHasResult()) || (this.count >= this.idx.getSize())) {
++            key = null;
++            value = null;
++            return false;
++          }
++
++          int[] idxCount = this.idx.getCurrentCounter();
++          int dimPos = 0;
++          int varPos = 0;
++          String varName=null;
++          Object val=null;
++          result = new StringBuilder();
++          for (int i = 0; i < this.validIDsCount; i++) {
++            if(this.shrinkedTypes[i]==1) {
++              result.append(((Array)this.dimArr.get(dimPos)).getObject(this.origin[this.dimMap[dimPos]] + idxCount[this.dimMap[dimPos]]));
++              dimPos++;
++            }else{
++              varName=this.vars.get(varPos).getName();
++              val=((Array)this.varArr.get(varPos)).getObject(this.idx);
++              if(this.cols.contains(varName)){
++                  Double gValue=greaterValueMap.get(varName);
++                  Double lValue=lessValueMap.get(varName);
++                  if(!eval_value(new Double(val.toString()),varName,gValue,lValue)){
++                    getOne=false;
++                    this.idx.incr();
++                    this.count += 1;
++//                    System.err.println("filtered value :"+val);
++                    break;
++                  }
++              }
++              result.append(val.toString());
++              varPos++;
++            }
++
++            if (getOne && i != this.validIDsCount - 1) {
++              result.append(this.seprator);
++            }
++          }
++      }while(!getOne);
++      key.set(this.count);
++      value.set(result.toString());
++      this.idx.incr();
++      this.count += 1;
++      return true;
++    }
++
++    public LongWritable createKey() {
++      return new LongWritable();
++    }
++
++    public Text createValue() {
++      return new Text();
++    }
++
++    public synchronized long getPos() throws IOException {
++      return this.count;
++    }
++
++    public void close() throws IOException {
++      if (this.ncfile != null)
++        this.ncfile.close();
++    }
++
++    public float getProgress() throws IOException
++    {
++      if (this.idx == null) {
++        return 1.0F;
++      }
++      return 1.0F * this.count / (float)this.idx.getSize();
++    }
++  }
++}
+diff -urN src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileSimpleInputFormat.java src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileSimpleInputFormat.java
+--- src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileSimpleInputFormat.java	1969-12-31 19:00:00.000000000 -0500
++++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileSimpleInputFormat.java	2013-02-27 00:25:10.880163715 -0500
+@@ -0,0 +1,435 @@
++package org.apache.hadoop.hive.contrib.fileformat.netcdf;
++
++import java.io.IOException;
++import java.util.ArrayList;
++import java.util.List;
++import org.apache.commons.logging.Log;
++import org.apache.hadoop.conf.Configuration;
++import org.apache.hadoop.fs.BlockLocation;
++import org.apache.hadoop.fs.FileStatus;
++import org.apache.hadoop.fs.FileSystem;
++import org.apache.hadoop.fs.Path;
++import org.apache.hadoop.fs.PathFilter;
++import org.apache.hadoop.hive.conf.HiveConf;
++import org.apache.hadoop.hive.ql.io.InputFormatChecker;
++import org.apache.hadoop.hive.serde2.ColumnProjectionUtils;
++import org.apache.hadoop.io.LongWritable;
++import org.apache.hadoop.io.Text;
++import org.apache.hadoop.mapred.FileInputFormat;
++import org.apache.hadoop.mapred.FileSplit;
++import org.apache.hadoop.mapred.InputSplit;
++import org.apache.hadoop.mapred.InvalidInputException;
++import org.apache.hadoop.mapred.JobConf;
++import org.apache.hadoop.mapred.RecordReader;
++import org.apache.hadoop.mapred.Reporter;
++import org.apache.hadoop.net.NetworkTopology;
++import ucar.ma2.Array;
++import ucar.ma2.Index;
++import ucar.nc2.Dimension;
++import ucar.nc2.NetcdfFile;
++import ucar.nc2.Variable;
++
++public class NcFileSimpleInputFormat extends FileInputFormat<LongWritable, Text>
++  implements InputFormatChecker
++{
++  private static final double SPLIT_SLOP = 1.1;
++  private long minSplitSize = 1;
++  private static final PathFilter hiddenFileFilter = new PathFilter() {
++    public boolean accept(Path p) {
++      String name = p.getName();
++      return (!name.startsWith("_")) && (!name.startsWith("."));
++    }
++  };
++
++  protected boolean isSplitable(FileSystem fs, Path filename)
++  {
++    return false;
++  }
++
++  public RecordReader<LongWritable, Text> getRecordReader(InputSplit split, JobConf conf, Reporter reporter)
++    throws IOException
++  {
++    reporter.setStatus(split.toString());
++    return new NcFileRecordReader(conf, split);
++  }
++
++  protected FileStatus[] listStatus(JobConf job, FileStatus file) throws IOException
++  {
++    Path p = file.getPath();
++
++    List result = new ArrayList();
++    List errors = new ArrayList();
++
++    List filters = new ArrayList();
++    filters.add(hiddenFileFilter);
++    PathFilter jobFilter = getInputPathFilter(job);
++    if (jobFilter != null) {
++      filters.add(jobFilter);
++    }
++    PathFilter inputFilter = new MultiPathFilter(filters);
++    FileSystem fs = p.getFileSystem(job);
++    FileStatus[] matches = fs.globStatus(p, inputFilter);
++    if (matches == null)
++      errors.add(new IOException("Input path does not exist: " + p));
++    else if (matches.length == 0) {
++      errors.add(new IOException("Input Pattern " + p + " matches 0 files"));
++    }
++    else {
++      for (FileStatus globStat : matches) {
++        if (globStat.isDir())
++          for (FileStatus stat : fs.listStatus(globStat.getPath(), inputFilter))
++          {
++            result.add(stat);
++          }
++        else {
++          result.add(globStat);
++        }
++      }
++    }
++    if (!errors.isEmpty()) {
++      throw new InvalidInputException(errors);
++    }
++    return (FileStatus[])result.toArray(new FileStatus[result.size()]);
++  }
++
++  public long getLen(JobConf job, FileStatus file)
++    throws IOException
++  {
++    long all = 0L;
++    if (file.isDir()) {
++      FileStatus[] files = listStatus(job, file);
++      for (FileStatus subfile : files)
++        all += getLen(job, subfile);
++    }
++    else {
++      all += file.getLen();
++    }
++    return all;
++  }
++
++  public ArrayList<FileSplit> getSplits(JobConf job, FileStatus dirFile, long totalSize, int numSplits)
++    throws IOException
++  {
++    ArrayList fsArr = new ArrayList(numSplits);
++    FileStatus[] files = listStatus(job, dirFile);
++    long goalSize = totalSize / (numSplits == 0 ? 1 : numSplits);
++    long minSize = Math.max(job.getLong("mapred.min.split.size", 1), 1);
++
++    NetworkTopology clusterMap = new NetworkTopology();
++    for (FileStatus file : files) {
++      if (!file.isDir()) {
++        Path path = file.getPath();
++        FileSystem fs = path.getFileSystem(job);
++        long length = file.getLen();
++        BlockLocation[] blkLocations = fs.getFileBlockLocations(file, 0L, length);
++
++        if ((length != 0L) && (isSplitable(fs, path))) {
++          long blockSize = file.getBlockSize();
++          long splitSize = computeSplitSize(goalSize, minSize, blockSize);
++
++          long bytesRemaining = length;
++          while (bytesRemaining / splitSize > 1.1D) {
++            String[] splitHosts = getSplitHosts(blkLocations, length - bytesRemaining, splitSize, clusterMap);
++
++            fsArr.add(new FileSplit(path, length - bytesRemaining, splitSize, splitHosts));
++
++            bytesRemaining -= splitSize;
++          }
++
++          if (bytesRemaining != 0L) {
++            fsArr.add(new FileSplit(path, length - bytesRemaining, bytesRemaining, blkLocations[(blkLocations.length - 1)].getHosts()));
++          }
++
++        }
++        else if (length != 0L) {
++          String[] splitHosts = getSplitHosts(blkLocations, 0L, length, clusterMap);
++
++          fsArr.add(new FileSplit(path, 0L, length, splitHosts));
++        }
++        else {
++          fsArr.add(new FileSplit(path, 0L, length, new String[0]));
++        }
++      } else {
++        fsArr.addAll(getSplits(job, file, totalSize, numSplits));
++      }
++
++    }
++
++    return fsArr;
++  }
++
++  public InputSplit[] getSplits(JobConf job, int numSplits)
++    throws IOException
++  {
++    FileStatus[] files = listStatus(job);
++
++    long totalSize = 0L;
++    for (FileStatus file : files) {
++      if (file.isDir()) {
++        totalSize += getLen(job, file);
++      }
++      totalSize += file.getLen();
++    }
++
++    long goalSize = totalSize / (numSplits == 0 ? 1 : numSplits);
++    long minSize = Math.max(job.getLong("mapred.min.split.size", 1), 1);
++
++    ArrayList splits = new ArrayList(numSplits);
++    NetworkTopology clusterMap = new NetworkTopology();
++    for (FileStatus file : files) {
++      if (!file.isDir()) {
++        Path path = file.getPath();
++        FileSystem fs = path.getFileSystem(job);
++        long length = file.getLen();
++        BlockLocation[] blkLocations = fs.getFileBlockLocations(file, 0L, length);
++
++        if ((length != 0L) && (isSplitable(fs, path))) {
++          long blockSize = file.getBlockSize();
++          long splitSize = computeSplitSize(goalSize, minSize, blockSize);
++
++          long bytesRemaining = length;
++          while (bytesRemaining / splitSize > 1.1D) {
++            String[] splitHosts = getSplitHosts(blkLocations, length - bytesRemaining, splitSize, clusterMap);
++
++            splits.add(new FileSplit(path, length - bytesRemaining, splitSize, splitHosts));
++
++            bytesRemaining -= splitSize;
++          }
++
++          if (bytesRemaining != 0L) {
++            splits.add(new FileSplit(path, length - bytesRemaining, bytesRemaining, blkLocations[(blkLocations.length - 1)].getHosts()));
++          }
++
++        }
++        else if (length != 0L) {
++          String[] splitHosts = getSplitHosts(blkLocations, 0L, length, clusterMap);
++
++          splits.add(new FileSplit(path, 0L, length, splitHosts));
++        }
++        else {
++          splits.add(new FileSplit(path, 0L, length, new String[0]));
++        }
++      } else {
++        splits.addAll(getSplits(job, file, totalSize, numSplits));
++      }
++    }
++    LOG.debug("Total # of splits: " + splits.size());
++    return (InputSplit[])splits.toArray(new FileSplit[splits.size()]);
++  }
++
++  public boolean validateInput(FileSystem fs, HiveConf conf, ArrayList<FileStatus> files)
++    throws IOException
++  {
++    if (files.size() <= 0) {
++      return false;
++    }
++    for (int fileId = 0; fileId < files.size(); fileId++) {
++      try {
++        NetcdfFile ncfile = NetcdfFile.open(((FileStatus)files.get(fileId)).getPath().toString());
++        ncfile.close();
++      } catch (IOException e) {
++        return false;
++      }
++    }
++    return true;
++  }
++
++  private static class MultiPathFilter
++    implements PathFilter
++  {
++    private final List<PathFilter> filters;
++
++    public MultiPathFilter(List<PathFilter> filters)
++    {
++      this.filters = filters;
++    }
++
++    public boolean accept(Path path) {
++      for (PathFilter filter : this.filters) {
++        if (!filter.accept(path)) {
++          return false;
++        }
++      }
++      return true;
++    }
++  }
++
++  static class NcFileRecordReader
++    implements RecordReader<LongWritable, Text>
++  {
++    private final long start;
++    private final long end;
++    private NetcdfFile ncfile = null;
++    private boolean isReaded;
++    private final String filename;
++    private int count;
++    private final Index idx;
++    private final String seprator;
++    private final ArrayList<Array> varArr;
++    private final ArrayList<Array> dimArr;
++    int[] dimMap;
++    int[] types;
++    int[] shrinkedTypes;
++    int validIDsCount;
++
++    public NcFileRecordReader(Configuration job, InputSplit genericSplit)
++      throws IOException
++    {
++      FileSplit split = (FileSplit)genericSplit;
++      this.start = split.getStart();
++      this.end = (this.start + split.getLength());
++      this.ncfile = NetcdfFile.open(split.getPath().toString());
++      this.filename = split.getPath().getName();
++      this.isReaded = false;
++      this.seprator = "\t";
++      ArrayList notSkipIDs = ColumnProjectionUtils.getReadColumnIDs(job);
++
++      ArrayList varList = (ArrayList)this.ncfile.getVariables();
++
++      if (notSkipIDs.size() == 0) {
++        for (int i = 0; i < varList.size(); i++) {
++          notSkipIDs.add(Integer.valueOf(i));
++        }
++      }
++      Variable mainVar = null;
++      int mainVarPos = 0;
++      this.varArr = new ArrayList();
++      this.dimArr = new ArrayList();
++      Variable var;
++      for (int i = 0; i < notSkipIDs.size(); i++) {
++        var = (Variable)varList.get(((Integer)notSkipIDs.get(i)).intValue());
++        if ((var.getDimensions().size() != 1) || (!var.getDimension(0).getName().equals(var.getName())))
++        {
++          if (mainVar == null) {
++            mainVar = var;
++            mainVarPos = i;
++          } else {
++            List<Dimension> varDs = var.getDimensions();
++            for (Dimension d : varDs) {
++              if (d.getName().equals(mainVar.getName())) {
++                mainVar = var;
++                mainVarPos = i;
++                break;
++              }
++            }
++          }
++        }
++      }
++      if (mainVar == null) {
++        mainVar = (Variable)varList.get(((Integer)notSkipIDs.get(0)).intValue());
++        mainVarPos = 0;
++      }
++      this.varArr.add(mainVar.read());
++      this.types = new int[notSkipIDs.size()];
++      this.dimMap = new int[mainVar.getDimensions().size()];
++      this.types[mainVarPos] = 2;
++
++      for (int i = 0; i < notSkipIDs.size(); i++) {
++        if (i != mainVarPos)
++        {
++          var = (Variable)varList.get(((Integer)notSkipIDs.get(i)).intValue());
++          boolean isDimension = false;
++          int size = mainVar.getDimensions().size();
++          for (int j = 0; j < size; j++) {
++            if (mainVar.getDimension(j).getName().equals(var.getName())) {
++              this.types[i] = 1;
++              this.dimArr.add(var.read());
++
++              this.dimMap[(this.dimArr.size() - 1)] = j;
++              isDimension = true;
++            }
++          }
++          if ((!isDimension) && 
++            (var.getDimensions().size() == mainVar.getDimensions().size())) {
++            boolean isSame = true;
++            for (int j = 0; j < var.getDimensions().size(); j++) {
++              if (!var.getDimension(j).getName().equals(mainVar.getDimension(j).getName())) {
++                isSame = false;
++                break;
++              }
++            }
++            if (isSame) {
++              this.varArr.add(var.read());
++              this.types[i] = 2;
++            }
++          }
++        }
++      }
++      ArrayList validIDs = new ArrayList();
++      this.shrinkedTypes = new int[this.types.length];
++      int pos = 0;
++      for (int i = 0; i < this.types.length; i++) {
++        if (this.types[i] != 0) {
++          this.shrinkedTypes[pos] = this.types[i];
++          validIDs.add(notSkipIDs.get(i));
++          pos++;
++        }
++      }
++      org.apache.hadoop.hive.contrib.serde2.NcFileSerDe.notSkipIDsFromInputFormat = validIDs;
++      this.validIDsCount = validIDs.size();
++      this.idx = mainVar.read().getIndex();
++    }
++
++    public synchronized boolean next(LongWritable key, Text value)
++      throws IOException
++    {
++      if (this.count >= this.idx.getSize()) {
++        this.isReaded = true;
++        key = null;
++        value = null;
++
++        return false;
++      }
++
++      int[] idxCount = this.idx.getCurrentCounter();
++
++      StringBuilder result = new StringBuilder();
++      int dimPos = 0;
++      int varPos = 0;
++      for (int i = 0; i < this.validIDsCount; i++) {
++        switch (this.shrinkedTypes[i]) {
++        case 1:
++          result.append(((Array)this.dimArr.get(dimPos)).getObject(idxCount[this.dimMap[dimPos]]));
++          dimPos++;
++          break;
++        case 2:
++          result.append(((Array)this.varArr.get(varPos)).getObject(this.idx));
++          varPos++;
++        }
++
++        if (i != this.validIDsCount - 1) {
++          result.append(this.seprator);
++        }
++      }
++
++      key.set(this.count);
++      value.set(result.toString());
++
++      this.idx.incr();
++      this.count += 1;
++      return true;
++    }
++
++    public LongWritable createKey() {
++      return new LongWritable();
++    }
++
++    public Text createValue() {
++      return new Text();
++    }
++
++    public synchronized long getPos() throws IOException {
++      return this.count;
++    }
++
++    public void close() throws IOException {
++      if (this.ncfile != null)
++        this.ncfile.close();
++    }
++
++    public float getProgress() throws IOException
++    {
++      return 1.0F * this.count / (float)this.idx.getSize();
++    }
++  }
++}
+diff -urN src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/VariableSlicer.java src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/VariableSlicer.java
+--- src.original/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/VariableSlicer.java	1969-12-31 19:00:00.000000000 -0500
++++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/VariableSlicer.java	2013-02-27 23:02:10.223521277 -0500
+@@ -0,0 +1,241 @@
++package org.apache.hadoop.hive.contrib.fileformat.netcdf;
++
++import java.io.IOException;
++import java.util.HashMap;
++import ucar.ma2.Array;
++import ucar.ma2.Index;
++import ucar.nc2.Variable;
++
++public class VariableSlicer
++{
++  private boolean hasResult;
++  private final HashMap<String, Integer> beginMap;
++  private final HashMap<String, Integer> endMap;
++
++  public VariableSlicer()
++  {
++    this.hasResult = true;
++    this.beginMap = new HashMap<String,Integer>();
++    this.endMap = new HashMap<String,Integer>();
++  }
++  public boolean getHasResult() {
++    return this.hasResult;
++  }
++  public int binarySearchAsc(Array arr, double value) {
++    int begin = 0;
++    int end = (int)(arr.getIndex().getSize() - 1);
++    Index idx = arr.getIndex();
++
++    while (end >= begin) {
++      int pos = begin + (end - begin >> 1);
++      idx.set0(pos);
++      double val = new Double(arr.getObject(idx).toString()).doubleValue();
++      if (val < value)
++        begin = pos + 1;
++      else if (val > value)
++        end = pos - 1;
++      else {
++        return pos;
++      }
++    }
++    return begin;
++  }
++  public int binarySearchDesc(Array arr, double value) {
++    int begin = 0;
++    int end = (int)(arr.getIndex().getSize() - 1);
++    Index idx = arr.getIndex();
++
++    while (end >= begin) {
++      int pos = (end + begin) / 2;
++      idx.set0(pos);
++      double val = new Double(arr.getObject(idx).toString()).doubleValue();
++      if (val == value)
++        return pos;
++      if (val > value)
++        begin = pos + 1;
++      else {
++        end = pos - 1;
++      }
++    }
++    return begin;
++  }
++  public int lessPos(Array arr, double value, int binaryPos) {
++    Index idx = arr.getIndex();
++    int pos = binaryPos;
++    int bound = (int)(idx.getSize() - 1);
++    if ((binaryPos < 0) || (binaryPos > bound)) {
++      return binaryPos;
++    }
++    idx.set0(binaryPos);
++    double val = new Double(arr.getObject(idx).toString()).doubleValue();
++    if (val != value)
++      return binaryPos - 1;
++    do
++    {
++      pos--;
++      if (pos < 0) {
++        return -1;
++      }
++      idx.set0(pos);
++      val = new Double(arr.getObject(idx).toString()).doubleValue();
++    }
++    while ((val == value) && (pos >= 0));
++    return pos;
++  }
++
++  public int greaterPos(Array arr, double value, int binaryPos)
++  {
++    Index idx = arr.getIndex();
++    int pos = binaryPos;
++    int bound = (int)(idx.getSize() - 1);
++    if ((binaryPos < 0) || (binaryPos > bound)) {
++      return binaryPos;
++    }
++    idx.set0(binaryPos);
++    double val = new Double(arr.getObject(idx).toString()).doubleValue();
++    if (val != value)
++      return binaryPos;
++    do
++    {
++      pos++;
++      if (pos > bound) {
++        return bound + 1;
++      }
++      idx.set0(pos);
++      val = new Double(arr.getObject(idx).toString()).doubleValue();
++    }while ((val == value) && (pos <= bound));
++    return pos;
++  }
++
++  public int lessEqualPos(Array arr, double value, int binaryPos) {
++    Index idx = arr.getIndex();
++    int pos = binaryPos;
++    int bound = (int)(idx.getSize() - 1);
++    if ((binaryPos < 0) || (binaryPos > bound)) {
++      return binaryPos;
++    }
++    idx.set0(binaryPos);
++    double val = new Double(arr.getObject(idx).toString()).doubleValue();
++
++    if (val != value)
++      return binaryPos - 1;
++    do
++    {
++      pos++;
++      if (pos > bound) {
++        return bound;
++      }
++      idx.set0(pos);
++      val = new Double(arr.getObject(idx).toString()).doubleValue();
++    }
++    while ((val == value) && (pos <= bound));
++    return pos - 1;
++  }
++
++  public int greaterEqualPos(Array arr, double value, int binaryPos)
++  {
++    Index idx = arr.getIndex();
++    int pos = binaryPos;
++    int bound = (int)(idx.getSize() - 1);
++    if ((binaryPos < 0) || (binaryPos > bound)) {
++      return binaryPos;
++    }
++    idx.set0(binaryPos);
++    double val = new Double(arr.getObject(idx).toString()).doubleValue();
++    if (val != value)
++      return binaryPos;
++    do
++    {
++      pos--;
++      if (pos < 0) {
++        return 0;
++      }
++      idx.set0(pos);
++      val = new Double(arr.getObject(idx).toString()).doubleValue();
++    }while ((val == value) && (pos >= 0));
++    return pos + 1;
++  }
++
++  public void process(Variable v, Double greaterValue, Boolean greaterEqual, Double lessValue, Boolean lessEqual)
++  {
++    if(v.getDimensions().size()>1)
++        return;
++    double minValue =Double.MIN_VALUE;
++    boolean minEqual = true;
++    double maxValue = Double.MAX_VALUE;
++    boolean maxEqual = true;
++    if (greaterValue != null) {
++      minValue = greaterValue.doubleValue();
++      minEqual = greaterEqual.booleanValue();
++    }
++    if (lessValue != null) {
++      maxValue = lessValue.doubleValue();
++      maxEqual = lessEqual.booleanValue();
++    }
++    setMaps(v, minValue, minEqual, maxValue, maxEqual);
++  }
++  public void setMaps(Variable v, double minValue, boolean minEqual, double maxValue, boolean maxEqual) {
++    try {
++      Array arr = v.read();
++      Index idx = arr.getIndex();
++      int beginIndex = 0;
++      int endIndex = (int)(idx.getSize() - 1);
++      int bound = endIndex;
++      idx.set0(beginIndex);
++      double first = new Double(arr.getObject(idx).toString()).doubleValue();
++      idx.set0(endIndex);
++      double last = new Double(arr.getObject(idx).toString()).doubleValue();
++      if (first <= last) {
++        int binaryPos1 = binarySearchAsc(arr, minValue);
++        int binaryPos2 = binarySearchAsc(arr, maxValue);
++
++        if (minEqual)
++          beginIndex = greaterEqualPos(arr, minValue, binaryPos1);
++        else {
++          beginIndex = greaterPos(arr, minValue, binaryPos1);
++        }
++        if (maxEqual)
++          endIndex = lessEqualPos(arr, maxValue, binaryPos2);
++        else
++          endIndex = lessPos(arr, maxValue, binaryPos2);
++      }
++      else
++      {
++        int binaryPos1 = binarySearchDesc(arr, maxValue);
++        int binaryPos2 = binarySearchDesc(arr, minValue);
++
++        if (maxEqual)
++          beginIndex = greaterEqualPos(arr, maxValue, binaryPos1);
++        else {
++          beginIndex = greaterPos(arr, maxValue, binaryPos1);
++        }
++        if (minEqual)
++          endIndex = lessEqualPos(arr, minValue, binaryPos2);
++        else {
++          endIndex = lessPos(arr, minValue, binaryPos2);
++        }
++      }
++
++      if (beginIndex > endIndex) {
++        this.hasResult = false;
++        return;
++      }if (beginIndex < 0)
++        beginIndex = 0;
++      else if (endIndex > bound) {
++        endIndex = bound;
++      }
++      this.beginMap.put(v.getName(), Integer.valueOf(beginIndex));
++      this.endMap.put(v.getName(), Integer.valueOf(endIndex));
++    }
++    catch (IOException e)
++    {
++      e.printStackTrace();
++    }
++  }
++
++  public HashMap<String, Integer> getBeginMap() { return this.beginMap; }
++
++  public HashMap<String, Integer> getEndMap() {
++    return this.endMap;
++  }
++}
+diff -urN src.original/contrib/src/java/org/apache/hadoop/hive/contrib/serde2/NcFileSerDe.java src/contrib/src/java/org/apache/hadoop/hive/contrib/serde2/NcFileSerDe.java
+--- src.original/contrib/src/java/org/apache/hadoop/hive/contrib/serde2/NcFileSerDe.java	1969-12-31 19:00:00.000000000 -0500
++++ src/contrib/src/java/org/apache/hadoop/hive/contrib/serde2/NcFileSerDe.java	2013-02-26 18:57:35.835353180 -0500
+@@ -0,0 +1,254 @@
++package org.apache.hadoop.hive.contrib.serde2;
++
++import java.io.IOException;
++import java.io.PrintStream;
++import java.util.ArrayList;
++import java.util.Arrays;
++import java.util.List;
++import java.util.Properties;
++import org.apache.commons.lang.StringUtils;
++import org.apache.commons.logging.Log;
++import org.apache.commons.logging.LogFactory;
++import org.apache.hadoop.conf.Configuration;
++import org.apache.hadoop.hive.serde2.SerDe;
++import org.apache.hadoop.hive.serde2.SerDeException;
++import org.apache.hadoop.hive.serde2.SerDeUtils;
++import org.apache.hadoop.hive.serde2.io.ByteWritable;
++import org.apache.hadoop.hive.serde2.io.DoubleWritable;
++import org.apache.hadoop.hive.serde2.io.ShortWritable;
++import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector;
++import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspector.Category;
++import org.apache.hadoop.hive.serde2.objectinspector.ObjectInspectorFactory;
++import org.apache.hadoop.hive.serde2.objectinspector.PrimitiveObjectInspector.PrimitiveCategory;
++import org.apache.hadoop.hive.serde2.objectinspector.StructField;
++import org.apache.hadoop.hive.serde2.objectinspector.StructObjectInspector;
++import org.apache.hadoop.hive.serde2.typeinfo.PrimitiveTypeInfo;
++import org.apache.hadoop.hive.serde2.typeinfo.TypeInfo;
++import org.apache.hadoop.hive.serde2.typeinfo.TypeInfoUtils;
++import org.apache.hadoop.io.BooleanWritable;
++import org.apache.hadoop.io.FloatWritable;
++import org.apache.hadoop.io.IntWritable;
++import org.apache.hadoop.io.LongWritable;
++import org.apache.hadoop.io.Text;
++import org.apache.hadoop.io.Writable;
++
++public class NcFileSerDe
++  implements SerDe
++{
++  public static final Log LOG = LogFactory.getLog(NcFileSerDe.class.getName());
++  StructObjectInspector rowOI;
++  ArrayList<Object> row;
++  int numColumns;
++  List<TypeInfo> columnTypes;
++  List<String> columnNames;
++  public static List<TypeInfo> colTypes;
++  public static List<String> colNames;
++  boolean[] fieldsSkip;
++  ArrayList<Integer> notSkipIDs;
++  ArrayList<Integer> colArray;
++  int[] posMap;
++  public static ArrayList<Integer> notSkipIDsFromInputFormat;
++  Text outputRowText;
++
++  public NcFileSerDe()
++    throws SerDeException
++  {
++  }
++
++  public void initialize(Configuration job, Properties tbl)
++    throws SerDeException
++  {
++    this.notSkipIDs = notSkipIDsFromInputFormat;
++    String columnNameProperty = tbl.getProperty("columns");
++    String columnTypeProperty = tbl.getProperty("columns.types");
++
++    this.columnNames = Arrays.asList(StringUtils.split(columnNameProperty, ','));
++    this.columnTypes = TypeInfoUtils.getTypeInfosFromTypeString(columnTypeProperty);
++
++    assert (this.columnNames.size() == this.columnTypes.size());
++    this.numColumns = this.columnNames.size();
++
++    if ((this.notSkipIDs == null) || (this.notSkipIDs.size() == 0)) {
++      this.notSkipIDs = new ArrayList();
++      for (int i = 0; i < this.numColumns; i++) {
++        this.notSkipIDs.add(Integer.valueOf(i));
++      }
++    }
++
++    for (int c = 0; c < this.numColumns; c++) {
++      if (((TypeInfo)this.columnTypes.get(c)).getCategory() != ObjectInspector.Category.PRIMITIVE) {
++        throw new SerDeException(new StringBuilder().append(getClass().getName()).append(" only accepts primitive columns, but column[").append(c).append("] named ").append((String)this.columnNames.get(c)).append(" has category ").append(((TypeInfo)this.columnTypes.get(c)).getCategory()).toString());
++      }
++
++    }
++
++    List columnOIs = new ArrayList(this.columnNames.size());
++
++    for (int c = 0; c < this.numColumns; c++) {
++      columnOIs.add(TypeInfoUtils.getStandardWritableObjectInspectorFromTypeInfo((TypeInfo)this.columnTypes.get(c)));
++    }
++
++    this.rowOI = ObjectInspectorFactory.getStandardStructObjectInspector(this.columnNames, columnOIs);
++
++    this.row = new ArrayList(this.numColumns);
++    for (int c = 0; c < this.numColumns; c++) {
++      this.row.add(null);
++    }
++
++    this.outputRowText = new Text();
++    this.fieldsSkip = new boolean[this.numColumns];
++    this.posMap = new int[this.numColumns];
++    this.colArray = new ArrayList();
++    for (int i = 0; i < this.numColumns; i++)
++    {
++      for (int j = 0; j < this.notSkipIDs.size(); j++) {
++        int id = ((Integer)this.notSkipIDs.get(j)).intValue();
++        if (id == i) {
++          this.posMap[i] = j;
++
++          this.colArray.add(Integer.valueOf(i));
++          break;
++        }
++
++      }
++
++    }
++
++    colTypes = this.columnTypes;
++    colNames = this.columnNames;
++  }
++
++  public Object deserialize(Writable field) throws SerDeException
++  {
++    Text t = (Text)field;
++
++    String[] list = StringUtils.split(t.toString(), '\t');
++
++    for (Integer i : this.colArray) {
++      try {
++        this.row.set(i.intValue(), deserializeField((TypeInfo)this.columnTypes.get(i.intValue()), list[this.posMap[i.intValue()]]));
++      }
++      catch (IOException e) {
++        e.printStackTrace();
++      }
++    }
++
++    return this.row;
++  }
++
++  static Object deserializeField(TypeInfo type,
++	      String str) throws IOException {
++	    if (str==null)
++	      return null;
++
++	    switch (type.getCategory()) {
++	    case PRIMITIVE: {
++	      PrimitiveTypeInfo ptype = (PrimitiveTypeInfo) type;
++	      switch (ptype.getPrimitiveCategory()) {
++
++	      case VOID: {
++	        return null;
++	      }
++
++	      case BOOLEAN: {
++	        BooleanWritable r=new BooleanWritable();
++	        r.set(new Boolean(str));
++	        return r;
++	      }
++	      case BYTE: {
++	        ByteWritable r=new ByteWritable();
++	        r.set(new Byte(str));
++	        return r;
++	      }
++	      case SHORT: {
++	        ShortWritable r=new ShortWritable();
++	        r.set(new Short(str));
++	        return r;
++	      }
++	      case INT: {
++	        IntWritable r=new IntWritable();
++	        r.set(new Integer(str));
++	        return r;
++	      }
++	      case LONG: {
++	        LongWritable r = new LongWritable();
++	        r.set(new Long(str));
++	        return r;
++	      }
++	      case FLOAT: {
++	        FloatWritable r = new FloatWritable();
++	        r.set(new Float(str));
++	        return r;
++	      }
++	      case DOUBLE: {
++	        DoubleWritable r = new DoubleWritable();
++	        r.set(new Double(str));
++	        return r;
++	      }
++	      case STRING: {
++	        Text r = new Text(str);
++	        return r;
++	      }
++	      default: {
++	        throw new RuntimeException("Unrecognized type: "
++	            + ptype.getPrimitiveCategory());
++	      }
++	      }
++	    }
++	      // Currently, deserialization of complex types is not supported
++	    case LIST:
++	    case MAP:
++	    case STRUCT:
++	    default: {
++	      throw new RuntimeException("Unsupported category: " + type.getCategory());
++	    }
++	    }
++	  }
++
++
++  public ObjectInspector getObjectInspector()
++    throws SerDeException
++  {
++    return this.rowOI;
++  }
++
++  public Class<? extends Writable> getSerializedClass()
++  {
++    return Text.class;
++  }
++
++  public Writable serialize(Object obj, ObjectInspector objInspector)
++    throws SerDeException
++  {
++    StructObjectInspector outputRowOI = (StructObjectInspector)objInspector;
++    List outputFieldRefs = outputRowOI.getAllStructFieldRefs();
++
++    if (outputFieldRefs.size() != this.numColumns) {
++      throw new SerDeException(new StringBuilder().append("Cannot serialize the object because there are ").append(outputFieldRefs.size()).append(" fields but the output has ").append(this.colArray.size()).append(" columns.").toString());
++    }
++
++    StringBuilder outputRowString = new StringBuilder();
++
++    for (int c = 0; c < this.numColumns; c++) {
++      if (c > 0) {
++        outputRowString.append('\t');
++      }
++
++      Object column = outputRowOI.getStructFieldData(obj, (StructField)outputFieldRefs.get(c));
++
++      if (((StructField)outputFieldRefs.get(c)).getFieldObjectInspector().getCategory() == ObjectInspector.Category.PRIMITIVE)
++      {
++        outputRowString.append(column == null ? "null" : column.toString());
++        System.out.print(new StringBuilder().append(((StructField)outputFieldRefs.get(c)).getFieldObjectInspector().getTypeName()).append(":").append(column.toString()).append("\t").toString());
++      }
++      else
++      {
++        outputRowString.append(SerDeUtils.getJSONString(column, ((StructField)outputFieldRefs.get(c)).getFieldObjectInspector()));
++      }
++
++    }
++
++    this.outputRowText.set(outputRowString.toString());
++    return this.outputRowText;
++  }
++}
+\ No newline at end of file
+diff -urN src.original/.externalToolBuilders/Hive_Ant_Builder.launch src/.externalToolBuilders/Hive_Ant_Builder.launch
+--- src.original/.externalToolBuilders/Hive_Ant_Builder.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/.externalToolBuilders/Hive_Ant_Builder.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,23 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+-<launchConfiguration type="org.eclipse.ant.AntBuilderLaunchConfigurationType">
+-<stringAttribute key="org.eclipse.ant.ui.ATTR_ANT_AUTO_TARGETS" value="package,"/>
+-<stringAttribute key="org.eclipse.ant.ui.ATTR_ANT_CLEAN_TARGETS" value="clean-test,clean,"/>
+-<stringAttribute key="org.eclipse.ant.ui.ATTR_ANT_MANUAL_TARGETS" value="package,"/>
+-<booleanAttribute key="org.eclipse.ant.ui.ATTR_TARGETS_UPDATED" value="true"/>
+-<booleanAttribute key="org.eclipse.ant.ui.DEFAULT_VM_INSTALL" value="false"/>
+-<stringAttribute key="org.eclipse.debug.core.ATTR_REFRESH_SCOPE" value="${project}"/>
+-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+-<listEntry value="/src/build.xml"/>
+-</listAttribute>
+-<listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+-<listEntry value="1"/>
+-</listAttribute>
+-<booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="true"/>
+-<booleanAttribute key="org.eclipse.debug.ui.ATTR_LAUNCH_IN_BACKGROUND" value="false"/>
+-<stringAttribute key="org.eclipse.jdt.launching.CLASSPATH_PROVIDER" value="org.eclipse.ant.ui.AntClasspathProvider"/>
+-<booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="true"/>
+-<stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_LOCATION" value="${workspace_loc:/src/build.xml}"/>
+-<stringAttribute key="org.eclipse.ui.externaltools.ATTR_RUN_BUILD_KINDS" value="incremental,auto,clean"/>
+-<booleanAttribute key="org.eclipse.ui.externaltools.ATTR_TRIGGERS_CONFIGURED" value="true"/>
+-</launchConfiguration>
+diff -urN src.original/HiveCLI.launch src/HiveCLI.launch
+--- src.original/HiveCLI.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/HiveCLI.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,32 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8" standalone="no"?>
+-<launchConfiguration type="org.eclipse.jdt.launching.localJavaApplication">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-
+-  <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_PATHS">
+-    <listEntry value="/hive/cli/src/java/org/apache/hadoop/hive/cli/CliDriver.java"/>
+-  </listAttribute>
+-
+-  <listAttribute key="org.eclipse.debug.core.MAPPED_RESOURCE_TYPES">
+-    <listEntry value="1"/>
+-  </listAttribute>
+-
+-    <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/ql/hive-exec-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-  </listAttribute>
+-
+-
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.cli.CliDriver"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console"/>
+-
+-</launchConfiguration>
+Binary files src.original/lib/netcdfAll-4.2.jar and src/lib/netcdfAll-4.2.jar differ
+diff -urN src.original/.project src/.project
+--- src.original/.project	2012-02-10 08:39:45.000000000 -0500
++++ src/.project	2013-02-26 18:53:06.819342086 -0500
+@@ -10,17 +10,6 @@
+ 			<arguments>
+ 			</arguments>
+ 		</buildCommand>
+-		<buildCommand>
+-			<name>org.eclipse.ui.externaltools.ExternalToolBuilder</name>
+-			<triggers>auto,clean,incremental,</triggers>
+-			<arguments>
+-				<dictionary>
+-					<key>LaunchConfigHandle</key>
+-					<value>&lt;project&gt;/.externalToolBuilders/Hive_Ant_Builder.launch</value>
+-				</dictionary>
+-			</arguments>
+-		</buildCommand>
+-
+ 	</buildSpec>
+ 	<natures>
+ 		<nature>org.eclipse.jdt.core.javanature</nature>
+diff -urN src.original/ql/src/java/org/apache/hadoop/hive/ql/exec/Utilities.java src/ql/src/java/org/apache/hadoop/hive/ql/exec/Utilities.java
+--- src.original/ql/src/java/org/apache/hadoop/hive/ql/exec/Utilities.java	2011-02-14 15:50:44.000000000 -0500
++++ src/ql/src/java/org/apache/hadoop/hive/ql/exec/Utilities.java	2013-02-26 18:57:35.835353180 -0500
+@@ -101,6 +101,7 @@
+ import org.apache.hadoop.hive.ql.stats.StatsFactory;
+ import org.apache.hadoop.hive.ql.stats.StatsPublisher;
+ import org.apache.hadoop.hive.serde.Constants;
++import org.apache.hadoop.hive.serde2.ColumnProjectionUtils;
+ import org.apache.hadoop.hive.serde2.lazy.LazySimpleSerDe;
+ import org.apache.hadoop.hive.shims.ShimLoader;
+ import org.apache.hadoop.io.SequenceFile;
+@@ -185,6 +186,7 @@
+         gWork = ret;
+         gWork.initialize();
+         gWorkMap.put(jobID, gWork);
++        ColumnProjectionUtils.setPathToNodeDesc(gWork.getPathToNodeDesc());
+       }
+       return (gWork);
+     } catch (Exception e) {
+@@ -453,6 +455,7 @@
+     // workaround for java 1.5
+     e.setPersistenceDelegate(ExpressionTypes.class, new EnumDelegate());
+     e.setPersistenceDelegate(GroupByDesc.Mode.class, new EnumDelegate());
++    w.computePredicate();
+     e.writeObject(w);
+     e.close();
+   }
+diff -urN src.original/ql/src/java/org/apache/hadoop/hive/ql/plan/MapredWork.java src/ql/src/java/org/apache/hadoop/hive/ql/plan/MapredWork.java
+--- src.original/ql/src/java/org/apache/hadoop/hive/ql/plan/MapredWork.java	2011-02-14 15:50:44.000000000 -0500
++++ src/ql/src/java/org/apache/hadoop/hive/ql/plan/MapredWork.java	2013-02-26 18:57:35.835353180 -0500
+@@ -21,10 +21,12 @@
+ import java.io.ByteArrayOutputStream;
+ import java.io.Serializable;
+ import java.util.ArrayList;
++import java.util.Iterator;
+ import java.util.LinkedHashMap;
+ import java.util.List;
+ import java.util.Map;
+ 
++import org.apache.hadoop.hive.ql.exec.FilterOperator;
+ import org.apache.hadoop.hive.ql.exec.Operator;
+ import org.apache.hadoop.hive.ql.exec.Utilities;
+ import org.apache.hadoop.hive.ql.parse.OpParseContext;
+@@ -33,6 +35,7 @@
+ import org.apache.hadoop.hive.ql.metadata.Hive;
+ import org.apache.hadoop.hive.ql.metadata.HiveException;
+ 
++
+ /**
+  * MapredWork.
+  *
+@@ -80,10 +83,113 @@
+ 
+   private boolean mapperCannotSpanPartns;
+ 
+-  public MapredWork() {
+-    aliasToPartnInfo = new LinkedHashMap<String, PartitionDesc>();
++  private LinkedHashMap<String, ArrayList<String>> pathToExprs;
++  private LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc;
++
++  public void putPathToNodeDesc(String path, ExprNodeDesc expr)
++  {
++    if (this.pathToNodeDesc == null) {
++      this.pathToNodeDesc = new LinkedHashMap<String, ArrayList<ExprNodeDesc>>();
++    }
++    if (this.pathToNodeDesc.containsKey(path)) {
++      ((ArrayList<ExprNodeDesc>)this.pathToNodeDesc.get(path)).add(expr);
++    } else {
++      ArrayList<ExprNodeDesc> lst = new ArrayList<ExprNodeDesc>();
++      lst.add(expr);
++      this.pathToNodeDesc.put(path, lst);
++    }
+   }
+ 
++  public void putPathToExprs(String path, String expr) { if (this.pathToExprs == null) {
++      this.pathToExprs = new LinkedHashMap<String,ArrayList<String>>();
++    }
++    if (this.pathToExprs.containsKey(path)) {
++      ((ArrayList<String>)this.pathToExprs.get(path)).add(expr);
++    } else {
++      ArrayList<String> lst = new ArrayList<String>();
++      lst.add(expr);
++      this.pathToExprs.put(path, lst);
++    } }
++
++  public LinkedHashMap<String, ArrayList<ExprNodeDesc>> getPathToNodeDesc() {
++    return this.pathToNodeDesc;
++  }
++  public void setPathToNodeDesc(LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc) {
++    this.pathToNodeDesc = pathToNodeDesc;
++  }
++  public LinkedHashMap<String, ArrayList<String>> getPathToExprs() {
++    return this.pathToExprs;
++  }
++  public void setPathToExprs(LinkedHashMap<String, ArrayList<String>> pathToExprs) {
++    this.pathToExprs = pathToExprs;
++  }
++  public void computePredicate()
++  {
++    Iterator i;
++    String key;
++    if ((this.pathToNodeDesc == null) && 
++      (this.pathToAliases != null))
++      for (i = this.pathToAliases.keySet().iterator(); i.hasNext(); ) { key = (String)i.next();
++        for (String alias : (ArrayList<String>)this.pathToAliases.get(key))
++          addPredicate((Operator)this.aliasToWork.get(alias), key);
++      }
++    
++  }
++
++  public void addPredicate(Operator<? extends Serializable> op, String key)
++  {
++    if ((op instanceof FilterOperator))
++    {
++      putPathToNodeDesc(key, ((FilterDesc)((FilterOperator)op).getConf()).getPredicate());
++      return;
++    }
++    if (op.getChildOperators() != null)
++      for (Operator cop : op.getChildOperators())
++        addPredicate(cop, key);
++  }
++  
++
++  public void dispalyMapOperatorTree()
++  {
++    System.out.println("Map Operator");
++    if ((this.aliasToWork != null) && (this.aliasToWork.size() != 0))
++      for (String key : this.aliasToWork.keySet())
++        displayOperatorTree((Operator)this.aliasToWork.get(key), 0);
++  }
++
++  public void displayReduceOperatorTree()
++  {
++    System.out.println("Reduce Operator");
++    if (this.reducer != null)
++      displayOperatorTree(this.reducer, 0);
++  }
++
++  public void displayOperatorTree(Operator<? extends Serializable> op, int indent) {
++    System.out.print(indentString(indent));
++    System.out.println(op.getType());
++    if ((op instanceof FilterOperator)) {
++      System.out.print(indentString(indent));
++      System.out.println(((FilterDesc)((FilterOperator)op).getConf()).getPredicate().getExprString());
++    }
++    if (op.getChildOperators() != null)
++      for (Operator cop : op.getChildOperators())
++        displayOperatorTree(cop, indent + 2);
++  }
++
++  private String indentString(int indent)
++  {
++    StringBuilder sb = new StringBuilder();
++    for (int i = 0; i < indent; i++) {
++      sb.append(" ");
++    }
++
++    return sb.toString();
++  }
++  
++  public MapredWork() {
++	    aliasToPartnInfo = new LinkedHashMap<String, PartitionDesc>();
++}
++  
+   public MapredWork(
+       final String command,
+       final LinkedHashMap<String, ArrayList<String>> pathToAliases,
+diff -urN src.original/serde/src/java/org/apache/hadoop/hive/serde2/ColumnProjectionUtils.java src/serde/src/java/org/apache/hadoop/hive/serde2/ColumnProjectionUtils.java
+--- src.original/serde/src/java/org/apache/hadoop/hive/serde2/ColumnProjectionUtils.java	2011-02-14 15:50:30.000000000 -0500
++++ src/serde/src/java/org/apache/hadoop/hive/serde2/ColumnProjectionUtils.java	2013-02-26 20:59:37.627655116 -0500
+@@ -19,18 +19,36 @@
+ package org.apache.hadoop.hive.serde2;
+ 
+ import java.util.ArrayList;
++import java.util.LinkedHashMap;
+ 
+ import org.apache.hadoop.conf.Configuration;
+ import org.apache.hadoop.util.StringUtils;
++import org.apache.hadoop.hive.ql.plan.ExprNodeDesc;
+ 
+ /**
+  * ColumnProjectionUtils.
+  *
+  */
+ public final class ColumnProjectionUtils {
+-
++	
++  private static LinkedHashMap<String, ArrayList<String>> pathToExprs;
++  private static LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc;
+   public static final String READ_COLUMN_IDS_CONF_STR = "hive.io.file.readcolumn.ids";
+ 
++  public static void setPathToExprs(LinkedHashMap<String, ArrayList<String>> map)
++  {
++    pathToExprs = map;
++  }
++  public static LinkedHashMap<String, ArrayList<String>> getPathToExprs() {
++    return pathToExprs;
++  }
++  public static void setPathToNodeDesc(LinkedHashMap<String, ArrayList<ExprNodeDesc>> map) {
++    pathToNodeDesc = map;
++  }
++  public static LinkedHashMap<String, ArrayList<ExprNodeDesc>> getPathToNodeDesc() {
++    return pathToNodeDesc;
++  }
++  
+   /**
+    * Sets read columns' ids(start from zero) for RCFile's Reader. Once a column
+    * is included in the list, RCFile's reader will not skip its value.
+diff -urN src.original/.settings/org.eclipse.jdt.core.prefs src/.settings/org.eclipse.jdt.core.prefs
+--- src.original/.settings/org.eclipse.jdt.core.prefs	2012-02-10 08:39:45.000000000 -0500
++++ src/.settings/org.eclipse.jdt.core.prefs	1969-12-31 19:00:00.000000000 -0500
+@@ -1,260 +0,0 @@
+-#Sat Feb 13 22:33:52 PST 2010
+-eclipse.preferences.version=1
+-org.eclipse.jdt.core.formatter.align_type_members_on_columns=false
+-org.eclipse.jdt.core.formatter.alignment_for_arguments_in_allocation_expression=16
+-org.eclipse.jdt.core.formatter.alignment_for_arguments_in_enum_constant=16
+-org.eclipse.jdt.core.formatter.alignment_for_arguments_in_explicit_constructor_call=16
+-org.eclipse.jdt.core.formatter.alignment_for_arguments_in_method_invocation=16
+-org.eclipse.jdt.core.formatter.alignment_for_arguments_in_qualified_allocation_expression=16
+-org.eclipse.jdt.core.formatter.alignment_for_assignment=0
+-org.eclipse.jdt.core.formatter.alignment_for_binary_expression=16
+-org.eclipse.jdt.core.formatter.alignment_for_compact_if=16
+-org.eclipse.jdt.core.formatter.alignment_for_conditional_expression=80
+-org.eclipse.jdt.core.formatter.alignment_for_enum_constants=0
+-org.eclipse.jdt.core.formatter.alignment_for_expressions_in_array_initializer=16
+-org.eclipse.jdt.core.formatter.alignment_for_multiple_fields=16
+-org.eclipse.jdt.core.formatter.alignment_for_parameters_in_constructor_declaration=16
+-org.eclipse.jdt.core.formatter.alignment_for_parameters_in_method_declaration=16
+-org.eclipse.jdt.core.formatter.alignment_for_selector_in_method_invocation=16
+-org.eclipse.jdt.core.formatter.alignment_for_superclass_in_type_declaration=16
+-org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_enum_declaration=16
+-org.eclipse.jdt.core.formatter.alignment_for_superinterfaces_in_type_declaration=16
+-org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_constructor_declaration=16
+-org.eclipse.jdt.core.formatter.alignment_for_throws_clause_in_method_declaration=16
+-org.eclipse.jdt.core.formatter.blank_lines_after_imports=1
+-org.eclipse.jdt.core.formatter.blank_lines_after_package=1
+-org.eclipse.jdt.core.formatter.blank_lines_before_field=0
+-org.eclipse.jdt.core.formatter.blank_lines_before_first_class_body_declaration=0
+-org.eclipse.jdt.core.formatter.blank_lines_before_imports=1
+-org.eclipse.jdt.core.formatter.blank_lines_before_member_type=1
+-org.eclipse.jdt.core.formatter.blank_lines_before_method=1
+-org.eclipse.jdt.core.formatter.blank_lines_before_new_chunk=1
+-org.eclipse.jdt.core.formatter.blank_lines_before_package=0
+-org.eclipse.jdt.core.formatter.blank_lines_between_import_groups=1
+-org.eclipse.jdt.core.formatter.blank_lines_between_type_declarations=1
+-org.eclipse.jdt.core.formatter.brace_position_for_annotation_type_declaration=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_anonymous_type_declaration=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_array_initializer=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_block=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_block_in_case=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_constructor_declaration=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_enum_constant=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_enum_declaration=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_method_declaration=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_switch=end_of_line
+-org.eclipse.jdt.core.formatter.brace_position_for_type_declaration=end_of_line
+-org.eclipse.jdt.core.formatter.comment.clear_blank_lines_in_block_comment=false
+-org.eclipse.jdt.core.formatter.comment.clear_blank_lines_in_javadoc_comment=false
+-org.eclipse.jdt.core.formatter.comment.format_block_comments=true
+-org.eclipse.jdt.core.formatter.comment.format_header=false
+-org.eclipse.jdt.core.formatter.comment.format_html=true
+-org.eclipse.jdt.core.formatter.comment.format_javadoc_comments=true
+-org.eclipse.jdt.core.formatter.comment.format_line_comments=true
+-org.eclipse.jdt.core.formatter.comment.format_source_code=true
+-org.eclipse.jdt.core.formatter.comment.indent_parameter_description=true
+-org.eclipse.jdt.core.formatter.comment.indent_root_tags=true
+-org.eclipse.jdt.core.formatter.comment.insert_new_line_before_root_tags=insert
+-org.eclipse.jdt.core.formatter.comment.insert_new_line_for_parameter=insert
+-org.eclipse.jdt.core.formatter.comment.line_length=100
+-org.eclipse.jdt.core.formatter.compact_else_if=true
+-org.eclipse.jdt.core.formatter.continuation_indentation=2
+-org.eclipse.jdt.core.formatter.continuation_indentation_for_array_initializer=2
+-org.eclipse.jdt.core.formatter.format_guardian_clause_on_one_line=false
+-org.eclipse.jdt.core.formatter.indent_body_declarations_compare_to_annotation_declaration_header=true
+-org.eclipse.jdt.core.formatter.indent_body_declarations_compare_to_enum_constant_header=true
+-org.eclipse.jdt.core.formatter.indent_body_declarations_compare_to_enum_declaration_header=true
+-org.eclipse.jdt.core.formatter.indent_body_declarations_compare_to_type_header=true
+-org.eclipse.jdt.core.formatter.indent_breaks_compare_to_cases=true
+-org.eclipse.jdt.core.formatter.indent_empty_lines=false
+-org.eclipse.jdt.core.formatter.indent_statements_compare_to_block=true
+-org.eclipse.jdt.core.formatter.indent_statements_compare_to_body=true
+-org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_cases=true
+-org.eclipse.jdt.core.formatter.indent_switchstatements_compare_to_switch=false
+-org.eclipse.jdt.core.formatter.indentation.size=2
+-org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_local_variable=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_member=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_after_annotation_on_parameter=do not insert
+-org.eclipse.jdt.core.formatter.insert_new_line_after_opening_brace_in_array_initializer=do not insert
+-org.eclipse.jdt.core.formatter.insert_new_line_at_end_of_file_if_missing=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_before_catch_in_try_statement=do not insert
+-org.eclipse.jdt.core.formatter.insert_new_line_before_closing_brace_in_array_initializer=do not insert
+-org.eclipse.jdt.core.formatter.insert_new_line_before_else_in_if_statement=do not insert
+-org.eclipse.jdt.core.formatter.insert_new_line_before_finally_in_try_statement=do not insert
+-org.eclipse.jdt.core.formatter.insert_new_line_before_while_in_do_statement=do not insert
+-org.eclipse.jdt.core.formatter.insert_new_line_in_empty_annotation_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_in_empty_anonymous_type_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_in_empty_block=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_in_empty_enum_constant=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_in_empty_enum_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_in_empty_method_body=insert
+-org.eclipse.jdt.core.formatter.insert_new_line_in_empty_type_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_and_in_type_parameter=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_assignment_operator=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_at_in_annotation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_at_in_annotation_type_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_binary_operator=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_closing_angle_bracket_in_type_arguments=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_closing_angle_bracket_in_type_parameters=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_closing_brace_in_block=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_closing_paren_in_cast=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_colon_in_assert=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_colon_in_case=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_colon_in_conditional=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_colon_in_for=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_colon_in_labeled_statement=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_allocation_expression=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_annotation=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_array_initializer=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_constructor_declaration_parameters=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_constructor_declaration_throws=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_enum_constant_arguments=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_enum_declarations=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_explicitconstructorcall_arguments=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_for_increments=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_for_inits=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_method_declaration_parameters=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_method_declaration_throws=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_method_invocation_arguments=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_multiple_field_declarations=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_multiple_local_declarations=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_parameterized_type_reference=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_superinterfaces=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_type_arguments=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_comma_in_type_parameters=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_ellipsis=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_angle_bracket_in_parameterized_type_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_angle_bracket_in_type_arguments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_angle_bracket_in_type_parameters=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_brace_in_array_initializer=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_bracket_in_array_allocation_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_bracket_in_array_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_annotation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_cast=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_catch=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_constructor_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_enum_constant=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_for=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_if=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_method_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_method_invocation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_parenthesized_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_switch=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_synchronized=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_opening_paren_in_while=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_postfix_operator=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_prefix_operator=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_question_in_conditional=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_question_in_wildcard=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_after_semicolon_in_for=insert
+-org.eclipse.jdt.core.formatter.insert_space_after_unary_operator=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_and_in_type_parameter=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_assignment_operator=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_at_in_annotation_type_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_binary_operator=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_angle_bracket_in_parameterized_type_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_angle_bracket_in_type_arguments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_angle_bracket_in_type_parameters=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_brace_in_array_initializer=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_bracket_in_array_allocation_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_bracket_in_array_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_annotation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_cast=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_catch=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_constructor_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_enum_constant=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_for=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_if=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_method_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_method_invocation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_parenthesized_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_switch=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_synchronized=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_closing_paren_in_while=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_colon_in_assert=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_colon_in_case=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_colon_in_conditional=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_colon_in_default=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_colon_in_for=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_colon_in_labeled_statement=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_allocation_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_annotation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_array_initializer=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_constructor_declaration_parameters=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_constructor_declaration_throws=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_enum_constant_arguments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_enum_declarations=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_explicitconstructorcall_arguments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_for_increments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_for_inits=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_method_declaration_parameters=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_method_declaration_throws=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_method_invocation_arguments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_multiple_field_declarations=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_multiple_local_declarations=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_parameterized_type_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_superinterfaces=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_type_arguments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_comma_in_type_parameters=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_ellipsis=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_angle_bracket_in_parameterized_type_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_angle_bracket_in_type_arguments=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_angle_bracket_in_type_parameters=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_annotation_type_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_anonymous_type_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_array_initializer=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_block=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_constructor_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_enum_constant=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_enum_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_method_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_switch=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_brace_in_type_declaration=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_bracket_in_array_allocation_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_bracket_in_array_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_bracket_in_array_type_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_annotation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_annotation_type_member_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_catch=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_constructor_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_enum_constant=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_for=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_if=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_method_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_method_invocation=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_parenthesized_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_switch=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_synchronized=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_opening_paren_in_while=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_parenthesized_expression_in_return=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_parenthesized_expression_in_throw=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_postfix_operator=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_prefix_operator=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_question_in_conditional=insert
+-org.eclipse.jdt.core.formatter.insert_space_before_question_in_wildcard=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_semicolon=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_semicolon_in_for=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_before_unary_operator=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_brackets_in_array_type_reference=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_empty_braces_in_array_initializer=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_empty_brackets_in_array_allocation_expression=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_empty_parens_in_annotation_type_member_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_empty_parens_in_constructor_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_empty_parens_in_enum_constant=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_empty_parens_in_method_declaration=do not insert
+-org.eclipse.jdt.core.formatter.insert_space_between_empty_parens_in_method_invocation=do not insert
+-org.eclipse.jdt.core.formatter.join_lines_in_comments=false
+-org.eclipse.jdt.core.formatter.join_wrapped_lines=false
+-org.eclipse.jdt.core.formatter.keep_else_statement_on_same_line=false
+-org.eclipse.jdt.core.formatter.keep_empty_array_initializer_on_one_line=false
+-org.eclipse.jdt.core.formatter.keep_imple_if_on_one_line=false
+-org.eclipse.jdt.core.formatter.keep_then_statement_on_same_line=false
+-org.eclipse.jdt.core.formatter.lineSplit=100
+-org.eclipse.jdt.core.formatter.never_indent_block_comments_on_first_column=false
+-org.eclipse.jdt.core.formatter.never_indent_line_comments_on_first_column=false
+-org.eclipse.jdt.core.formatter.number_of_blank_lines_at_beginning_of_method_body=0
+-org.eclipse.jdt.core.formatter.number_of_empty_lines_to_preserve=30
+-org.eclipse.jdt.core.formatter.put_empty_statement_on_new_line=true
+-org.eclipse.jdt.core.formatter.tabulation.char=space
+-org.eclipse.jdt.core.formatter.tabulation.size=2
+-org.eclipse.jdt.core.formatter.use_tabs_only_for_leading_indentations=false
+-org.eclipse.jdt.core.formatter.wrap_before_binary_operator=true
+diff -urN src.original/.settings/org.eclipse.jdt.ui.prefs src/.settings/org.eclipse.jdt.ui.prefs
+--- src.original/.settings/org.eclipse.jdt.ui.prefs	2012-02-10 08:39:45.000000000 -0500
++++ src/.settings/org.eclipse.jdt.ui.prefs	1969-12-31 19:00:00.000000000 -0500
+@@ -1,110 +0,0 @@
+-#Sat Feb 13 22:33:52 PST 2010
+-cleanup.add_default_serial_version_id=true
+-cleanup.add_generated_serial_version_id=false
+-cleanup.add_missing_annotations=true
+-cleanup.add_missing_deprecated_annotations=true
+-cleanup.add_missing_methods=false
+-cleanup.add_missing_nls_tags=false
+-cleanup.add_missing_override_annotations=true
+-cleanup.add_serial_version_id=false
+-cleanup.always_use_blocks=true
+-cleanup.always_use_parentheses_in_expressions=false
+-cleanup.always_use_this_for_non_static_field_access=false
+-cleanup.always_use_this_for_non_static_method_access=false
+-cleanup.convert_to_enhanced_for_loop=true
+-cleanup.correct_indentation=true
+-cleanup.format_source_code=true
+-cleanup.format_source_code_changes_only=false
+-cleanup.make_local_variable_final=true
+-cleanup.make_parameters_final=false
+-cleanup.make_private_fields_final=true
+-cleanup.make_type_abstract_if_missing_method=false
+-cleanup.make_variable_declarations_final=false
+-cleanup.never_use_blocks=false
+-cleanup.never_use_parentheses_in_expressions=true
+-cleanup.organize_imports=true
+-cleanup.qualify_static_field_accesses_with_declaring_class=false
+-cleanup.qualify_static_member_accesses_through_instances_with_declaring_class=true
+-cleanup.qualify_static_member_accesses_through_subtypes_with_declaring_class=true
+-cleanup.qualify_static_member_accesses_with_declaring_class=true
+-cleanup.qualify_static_method_accesses_with_declaring_class=false
+-cleanup.remove_private_constructors=true
+-cleanup.remove_trailing_whitespaces=true
+-cleanup.remove_trailing_whitespaces_all=true
+-cleanup.remove_trailing_whitespaces_ignore_empty=false
+-cleanup.remove_unnecessary_casts=false
+-cleanup.remove_unnecessary_nls_tags=true
+-cleanup.remove_unused_imports=true
+-cleanup.remove_unused_local_variables=true
+-cleanup.remove_unused_private_fields=true
+-cleanup.remove_unused_private_members=false
+-cleanup.remove_unused_private_methods=true
+-cleanup.remove_unused_private_types=true
+-cleanup.sort_members=false
+-cleanup.sort_members_all=false
+-cleanup.use_blocks=true
+-cleanup.use_blocks_only_for_return_and_throw=false
+-cleanup.use_parentheses_in_expressions=false
+-cleanup.use_this_for_non_static_field_access=true
+-cleanup.use_this_for_non_static_field_access_only_if_necessary=true
+-cleanup.use_this_for_non_static_method_access=true
+-cleanup.use_this_for_non_static_method_access_only_if_necessary=true
+-cleanup_profile=_Apache Hive Cleanup
+-cleanup_settings_version=2
+-eclipse.preferences.version=1
+-editor_save_participant_org.eclipse.jdt.ui.postsavelistener.cleanup=true
+-formatter_profile=_Apache Hive Formatter
+-formatter_settings_version=11
+-org.eclipse.jdt.ui.javadoc=false
+-org.eclipse.jdt.ui.text.custom_code_templates=<?xml version\="1.0" encoding\="UTF-8" standalone\="no"?><templates><template autoinsert\="true" context\="gettercomment_context" deleted\="false" description\="Comment for getter method" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.gettercomment" name\="gettercomment">/**\n * @return the ${bare_field_name}\n */</template><template autoinsert\="true" context\="settercomment_context" deleted\="false" description\="Comment for setter method" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.settercomment" name\="settercomment">/**\n * @param ${param} the ${bare_field_name} to set\n */</template><template autoinsert\="true" context\="constructorcomment_context" deleted\="false" description\="Comment for created constructors" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.constructorcomment" name\="constructorcomment">/**\n * ${tags}\n */</template><template autoinsert\="false" context\="filecomment_context" deleted\="false" description\="Comment for created Java files" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.filecomment" name\="filecomment">/**\n * Licensed to the Apache Software Foundation (ASF) under one\n * or more contributor license agreements.  See the NOTICE file\n * distributed with this work for additional information\n * regarding copyright ownership.  The ASF licenses this file\n * to you under the Apache License, Version 2.0 (the\n * "License"); you may not use this file except in compliance\n * with the License.  You may obtain a copy of the License at\n *\n *     http\://www.apache.org/licenses/LICENSE-2.0\n *\n * Unless required by applicable law or agreed to in writing, software\n * distributed under the License is distributed on an "AS IS" BASIS,\n * WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.\n * See the License for the specific language governing permissions and\n * limitations under the License.\n */\n</template><template autoinsert\="false" context\="typecomment_context" deleted\="false" description\="Comment for created types" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.typecomment" name\="typecomment">/**\n * ${type_name}.\n *\n * ${tags}\n */</template><template autoinsert\="true" context\="fieldcomment_context" deleted\="false" description\="Comment for fields" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.fieldcomment" name\="fieldcomment">/**\n * \n */</template><template autoinsert\="true" context\="methodcomment_context" deleted\="false" description\="Comment for non-overriding methods" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.methodcomment" name\="methodcomment">/**\n * ${tags}\n */</template><template autoinsert\="true" context\="overridecomment_context" deleted\="false" description\="Comment for overriding methods" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.overridecomment" name\="overridecomment">/* (non-Javadoc)\n * ${see_to_overridden}\n */</template><template autoinsert\="true" context\="delegatecomment_context" deleted\="false" description\="Comment for delegate methods" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.delegatecomment" name\="delegatecomment">/**\n * ${tags}\n * ${see_to_target}\n */</template><template autoinsert\="true" context\="newtype_context" deleted\="false" description\="Newly created files" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.newtype" name\="newtype">${filecomment}\n${package_declaration}\n\n${typecomment}\n${type_declaration}</template><template autoinsert\="true" context\="classbody_context" deleted\="false" description\="Code in new class type bodies" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.classbody" name\="classbody">\n</template><template autoinsert\="true" context\="interfacebody_context" deleted\="false" description\="Code in new interface type bodies" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.interfacebody" name\="interfacebody">\n</template><template autoinsert\="true" context\="enumbody_context" deleted\="false" description\="Code in new enum type bodies" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.enumbody" name\="enumbody">\n</template><template autoinsert\="true" context\="annotationbody_context" deleted\="false" description\="Code in new annotation type bodies" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.annotationbody" name\="annotationbody">\n</template><template autoinsert\="true" context\="catchblock_context" deleted\="false" description\="Code in new catch blocks" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.catchblock" name\="catchblock">// ${todo} Auto-generated catch block\n${exception_var}.printStackTrace();</template><template autoinsert\="true" context\="methodbody_context" deleted\="false" description\="Code in created method stubs" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.methodbody" name\="methodbody">// ${todo} Auto-generated method stub\n${body_statement}</template><template autoinsert\="true" context\="constructorbody_context" deleted\="false" description\="Code in created constructor stubs" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.constructorbody" name\="constructorbody">${body_statement}\n// ${todo} Auto-generated constructor stub</template><template autoinsert\="true" context\="getterbody_context" deleted\="false" description\="Code in created getters" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.getterbody" name\="getterbody">return ${field};</template><template autoinsert\="true" context\="setterbody_context" deleted\="false" description\="Code in created setters" enabled\="true" id\="org.eclipse.jdt.ui.text.codetemplates.setterbody" name\="setterbody">${field} \= ${param};</template></templates>
+-sp_cleanup.add_default_serial_version_id=true
+-sp_cleanup.add_generated_serial_version_id=false
+-sp_cleanup.add_missing_annotations=true
+-sp_cleanup.add_missing_deprecated_annotations=true
+-sp_cleanup.add_missing_methods=false
+-sp_cleanup.add_missing_nls_tags=false
+-sp_cleanup.add_missing_override_annotations=true
+-sp_cleanup.add_serial_version_id=false
+-sp_cleanup.always_use_blocks=true
+-sp_cleanup.always_use_parentheses_in_expressions=false
+-sp_cleanup.always_use_this_for_non_static_field_access=false
+-sp_cleanup.always_use_this_for_non_static_method_access=false
+-sp_cleanup.convert_to_enhanced_for_loop=false
+-sp_cleanup.correct_indentation=false
+-sp_cleanup.format_source_code=false
+-sp_cleanup.format_source_code_changes_only=false
+-sp_cleanup.make_local_variable_final=false
+-sp_cleanup.make_parameters_final=false
+-sp_cleanup.make_private_fields_final=true
+-sp_cleanup.make_type_abstract_if_missing_method=false
+-sp_cleanup.make_variable_declarations_final=true
+-sp_cleanup.never_use_blocks=false
+-sp_cleanup.never_use_parentheses_in_expressions=true
+-sp_cleanup.on_save_use_additional_actions=true
+-sp_cleanup.organize_imports=true
+-sp_cleanup.qualify_static_field_accesses_with_declaring_class=false
+-sp_cleanup.qualify_static_member_accesses_through_instances_with_declaring_class=true
+-sp_cleanup.qualify_static_member_accesses_through_subtypes_with_declaring_class=true
+-sp_cleanup.qualify_static_member_accesses_with_declaring_class=false
+-sp_cleanup.qualify_static_method_accesses_with_declaring_class=false
+-sp_cleanup.remove_private_constructors=true
+-sp_cleanup.remove_trailing_whitespaces=true
+-sp_cleanup.remove_trailing_whitespaces_all=true
+-sp_cleanup.remove_trailing_whitespaces_ignore_empty=false
+-sp_cleanup.remove_unnecessary_casts=false
+-sp_cleanup.remove_unnecessary_nls_tags=false
+-sp_cleanup.remove_unused_imports=true
+-sp_cleanup.remove_unused_local_variables=false
+-sp_cleanup.remove_unused_private_fields=true
+-sp_cleanup.remove_unused_private_members=false
+-sp_cleanup.remove_unused_private_methods=true
+-sp_cleanup.remove_unused_private_types=true
+-sp_cleanup.sort_members=false
+-sp_cleanup.sort_members_all=false
+-sp_cleanup.use_blocks=true
+-sp_cleanup.use_blocks_only_for_return_and_throw=false
+-sp_cleanup.use_parentheses_in_expressions=false
+-sp_cleanup.use_this_for_non_static_field_access=false
+-sp_cleanup.use_this_for_non_static_field_access_only_if_necessary=true
+-sp_cleanup.use_this_for_non_static_method_access=false
+-sp_cleanup.use_this_for_non_static_method_access_only_if_necessary=true
+diff -urN src.original/TestCliDriver.launch src/TestCliDriver.launch
+--- src.original/TestCliDriver.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestCliDriver.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.cli.TestCliDriver"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dtest.warehouse.dir=&quot;pfile://${workspace_loc:src}/build/test/data/warehouse&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+diff -urN src.original/TestEmbeddedHiveMetaStore.launch src/TestEmbeddedHiveMetaStore.launch
+--- src.original/TestEmbeddedHiveMetaStore.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestEmbeddedHiveMetaStore.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.metastore.TestEmbeddedHiveMetaStore"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dtest.warehouse.dir=&quot;pfile://${workspace_loc:src}/build/test/data/warehouse&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+diff -urN src.original/TestHBaseCliDriver.launch src/TestHBaseCliDriver.launch
+--- src.original/TestHBaseCliDriver.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestHBaseCliDriver.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.6.0.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.cli.TestHBaseCliDriver"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+diff -urN src.original/TestHive.launch src/TestHive.launch
+--- src.original/TestHive.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestHive.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.ql.metadata.TestHive"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dtest.warehouse.dir=&quot;pfile://${workspace_loc:src}/build/test/data/warehouse&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+diff -urN src.original/TestHiveMetaStoreChecker.launch src/TestHiveMetaStoreChecker.launch
+--- src.original/TestHiveMetaStoreChecker.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestHiveMetaStoreChecker.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.ql.metadata.TestHiveMetaStoreChecker"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dtest.warehouse.dir=&quot;pfile://${workspace_loc:src}/build/test/data/warehouse&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+diff -urN src.original/TestJdbc.launch src/TestJdbc.launch
+--- src.original/TestJdbc.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestJdbc.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,27 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.jdbc.TestJdbcDriver"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot; -Dtest.warehouse.dir=&quot;${workspace_loc:src}/build/ql/test/data/warehouse&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+-
+diff -urN src.original/TestMTQueries.launch src/TestMTQueries.launch
+--- src.original/TestMTQueries.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestMTQueries.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.ql.TestMTQueries"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+diff -urN src.original/TestRemoteHiveMetaStore.launch src/TestRemoteHiveMetaStore.launch
+--- src.original/TestRemoteHiveMetaStore.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestRemoteHiveMetaStore.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.metastore.TestRemoteHiveMetaStore"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dtest.warehouse.dir=&quot;pfile://${workspace_loc:src}/build/test/data/warehouse&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
+diff -urN src.original/TestTruncate.launch src/TestTruncate.launch
+--- src.original/TestTruncate.launch	2012-02-10 08:39:45.000000000 -0500
++++ src/TestTruncate.launch	1969-12-31 19:00:00.000000000 -0500
+@@ -1,26 +0,0 @@
+-<?xml version="1.0" encoding="UTF-8"?>
+-<launchConfiguration type="org.eclipse.jdt.junit.launchconfig">
+-  <booleanAttribute key="org.eclipse.debug.core.appendEnvironmentVariables" value="false"/>
+-  <mapAttribute key="org.eclipse.debug.core.environmentVariables">
+-    <mapEntry key="JAVA_HOME" value="${system_property:java.home}"/>
+-    <mapEntry key="HADOOP_HOME" value="${workspace_loc:src}/build/hadoopcore/hadoop-0.20.1"/>
+-  </mapAttribute>
+-  <stringAttribute key="org.eclipse.jdt.junit.CONTAINER" value=""/>
+-  <booleanAttribute key="org.eclipse.jdt.junit.KEEPRUNNING_ATTR" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TESTNAME" value=""/>
+-  <stringAttribute key="org.eclipse.jdt.junit.TEST_KIND" value="org.eclipse.jdt.junit.loader.junit3"/>
+-  <listAttribute key="org.eclipse.jdt.launching.CLASSPATH">
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry containerPath=&quot;org.eclipse.jdt.launching.JRE_CONTAINER&quot; javaProject=&quot;src&quot; path=&quot;1&quot; type=&quot;4&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/metastore/hive-metastore-0.7.1.jar&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/metastore/src/model&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/build/hadoopcore/hadoop-0.20.1/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/data/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry id=&quot;org.eclipse.jdt.launching.classpathentry.defaultClasspath&quot;&gt;&#10;&lt;memento exportedEntriesOnly=&quot;false&quot; project=&quot;src&quot;/&gt;&#10;&lt;/runtimeClasspathEntry&gt;&#10;"/>
+-    <listEntry value="&lt;?xml version=&quot;1.0&quot; encoding=&quot;UTF-8&quot;?&gt;&#10;&lt;runtimeClasspathEntry internalArchive=&quot;/src/conf&quot; path=&quot;3&quot; type=&quot;2&quot;/&gt;&#10;"/>
+-  </listAttribute>
+-  <booleanAttribute key="org.eclipse.jdt.launching.DEFAULT_CLASSPATH" value="false"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.MAIN_TYPE" value="org.apache.hadoop.hive.metastore.TestTruncate"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.PROJECT_ATTR" value="src"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.VM_ARGUMENTS" value="-Dhive.root.logger=INFO,console -Dtest.tmp.dir=&quot;${workspace_loc:src}/build/ql/tmp&quot; -Dbuild.dir=&quot;${workspace_loc:src}/build/ql&quot; -Dbuild.dir.hive=&quot;${workspace_loc:src}/build&quot; -Dversion=&quot;0.7.1&quot;"/>
+-  <stringAttribute key="org.eclipse.jdt.launching.WORKING_DIRECTORY" value="${workspace_loc:src}/ql"/>
+-</launchConfiguration>
