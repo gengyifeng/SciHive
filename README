@@ -1,0 +1,2 @@
+SciHive is implemented as a plugin for analyzing large scientific datasets in Hive. It currently support NetCDF file format.
+
