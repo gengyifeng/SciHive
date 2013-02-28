@@ -1,0 +1,21 @@
+<?xml version="1.0"?>
+<?xml-stylesheet type="text/xsl" href="configuration.xsl"?>
+
+<configuration>
+<property>
+  <name>namenode</name>
+  <value>hdfs://localhost:54310</value>
+</property>
+<property>
+  <name>serde.class</name>
+  <value>org.apache.hadoop.hive.contrib.serde2.NcFileSerDe</value>
+</property>
+<property>
+  <name>inputformat.class</name>
+  <value>org.apache.hadoop.hive.contrib.fileformat.netcdf.NcFileInputFormat</value>
+</property>
+<property>
+  <name>outputformat.class</name>
+  <value>org.apache.hadoop.hive.ql.io.IgnoreKeyTextOutputFormat</value>
+</property>
+</configuration>
