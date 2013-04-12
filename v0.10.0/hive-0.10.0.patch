@@ -21,12 +21,6 @@ diff -urN src_origin/build.properties src/build.properties
  
  build.dir.hive=${hive.root}/build
  build.dir.hadoop=${build.dir.hive}/hadoopcore
-diff -urN src_origin/cmd src/cmd
---- src_origin/cmd	1970-01-01 08:00:00.000000000 +0800
-+++ src/cmd	2013-04-10 14:48:49.449763830 +0800
-@@ -0,0 +1,2 @@
-+export ANT_OPTS="-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=8087"
-+ant package -Dhadoop.version=1.0.4 -Dhadoop-0.20S.version=1.0.4 -Dhadoop.mr.rev=20S
 diff -urN src_origin/common/ivy.xml src/common/ivy.xml
 --- src_origin/common/ivy.xml	2013-04-12 12:31:20.071528408 +0800
 +++ src/common/ivy.xml	2013-04-10 14:57:43.817789692 +0800
