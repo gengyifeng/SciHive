@@ -1,4 +1,4 @@
-SciHive is implemented as a plugin for analyzing large scientific datasets in Hive. It currently support NetCDF file format.
+SciHive is implemented as a plugin for analyzing large scientific datasets in Hive. It currently supports NetCDF file format.
 
 Hncdump is ported as ncdump for NetCDF files in HDFS. It is also helpful to create a table according to the structure of the NetCDF file. Please run "./hncdump -h" to see the usage.
 
