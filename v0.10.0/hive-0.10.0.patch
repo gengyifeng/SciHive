@@ -21,6 +21,12 @@ diff -urN src_origin/build.properties src/build.properties
  
  build.dir.hive=${hive.root}/build
  build.dir.hadoop=${build.dir.hive}/hadoopcore
+diff -urN src_origin/cmd src/cmd
+--- src_origin/cmd	1970-01-01 08:00:00.000000000 +0800
++++ src/cmd	2013-04-10 14:48:49.449763830 +0800
+@@ -0,0 +1,2 @@
++export ANT_OPTS="-Dhttp.proxyHost=127.0.0.1 -Dhttp.proxyPort=8087"
++ant package -Dhadoop.version=1.0.4 -Dhadoop-0.20S.version=1.0.4 -Dhadoop.mr.rev=20S
 diff -urN src_origin/common/ivy.xml src/common/ivy.xml
 --- src_origin/common/ivy.xml	2013-04-12 12:31:20.071528408 +0800
 +++ src/common/ivy.xml	2013-04-10 14:57:43.817789692 +0800
@@ -58,10 +64,45 @@ diff -urN src_origin/common/ivy.xml src/common/ivy.xml
                  conf="compile->default" transitive="false" />
      <dependency org="commons-cli" name="commons-cli" rev="${commons-cli.version}"/>
      <dependency org="org.apache.commons" name="commons-compress" rev="${commons-compress.version}"/>
+diff -urN src_origin/contrib/.classpath src/contrib/.classpath
+--- src_origin/contrib/.classpath	1970-01-01 08:00:00.000000000 +0800
++++ src/contrib/.classpath	2013-04-17 20:59:32.604018676 +0800
+@@ -0,0 +1,10 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<classpath>
++	<classpathentry kind="src" path="src/java"/>
++	<classpathentry kind="src" path="src/test"/>
++	<classpathentry kind="con" path="org.eclipse.jdt.launching.JRE_CONTAINER"/>
++	<classpathentry kind="lib" path="/ncSrc-4.2/cdm/target/netcdfAll-4.2.jar"/>
++	<classpathentry kind="lib" path="/home/yifeng/hbase-0.94.6.1/hbase-0.94.6.1.jar"/>
++	<classpathentry kind="lib" path="/home/yifeng/hive-0.10.0/src/build/ql/hive-exec-0.10.0-SNAPSHOT.jar"/>
++	<classpathentry kind="output" path="bin"/>
++</classpath>
+diff -urN src_origin/contrib/.project src/contrib/.project
+--- src_origin/contrib/.project	1970-01-01 08:00:00.000000000 +0800
++++ src/contrib/.project	2013-04-17 20:52:58.395999597 +0800
+@@ -0,0 +1,17 @@
++<?xml version="1.0" encoding="UTF-8"?>
++<projectDescription>
++	<name>hive_contrib</name>
++	<comment></comment>
++	<projects>
++	</projects>
++	<buildSpec>
++		<buildCommand>
++			<name>org.eclipse.jdt.core.javabuilder</name>
++			<arguments>
++			</arguments>
++		</buildCommand>
++	</buildSpec>
++	<natures>
++		<nature>org.eclipse.jdt.core.javanature</nature>
++	</natures>
++</projectDescription>
 diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java
 --- src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java	2013-04-11 00:21:51.773293631 +0800
-@@ -0,0 +1,752 @@
++++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileInputFormat.java	2014-01-06 00:43:03.095044265 +0800
+@@ -0,0 +1,751 @@
 +package org.apache.hadoop.hive.contrib.fileformat.netcdf;
 +
 +import java.io.IOException;
@@ -364,7 +405,7 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +    int[] validShapeDivider;
 +    int totalSize=0;
 +    int dimsSize=0;
-+    public Double equalValue=null;
++    public HashMap<String,Double> equalValueMap= new HashMap();
 +    public HashMap<String, Double> greaterValueMap = new HashMap();
 +    public HashMap<String, Boolean> greaterBoolMap = new HashMap();
 +    public HashMap<String, Double> lessValueMap = new HashMap();
@@ -376,7 +417,7 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +    public ArrayList<ArrayList<Integer>> validIndexArr;
 +    boolean noResult=false;
 +    boolean notEqual(Double input,Double num){
-+        return input!=num?true:false;
++        return !input.equals(num)?true:false;
 +    }
 +    boolean greaterEqual(Double input,Double num){
 +        return input>=num?true:false;
@@ -427,7 +468,6 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +            return;
 +        Array arr=v.read();
 +        long size=arr.getSize();
-+        boolean valid=true;
 +        ArrayList<Integer> validIndex=new ArrayList<Integer>();
 +        Double gValue=greaterValueMap.get(col);
 +        Double lValue=lessValueMap.get(col);
@@ -453,7 +493,7 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +            if(value>old){
 +                this.greaterValueMap.put(col, value);
 +                this.greaterBoolMap.put(col, equal);
-+            }else if(value==old){
++            }else if(value.equals(old)){
 +                if(!equal)
 +                    this.greaterBoolMap.put(col,equal);
 +            }
@@ -468,7 +508,7 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +            if(value<old){
 +                this.lessValueMap.put(col, value);
 +                this.lessBoolMap.put(col, equal);
-+            }else if(value==old){
++            }else if(value.equals(old)){
 +                if(!equal)
 +                    this.lessBoolMap.put(col,equal);
 +            }
@@ -478,10 +518,10 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +      if ((op instanceof GenericUDFOPEqual)) {
 +        updateGreaterValueMap(col,value,Boolean.valueOf(true));
 +        updateLessValueMap(col,value,Boolean.valueOf(true));
-+        if(this.equalValue==null){
-+            this.equalValue=value;
++        if(!equalValueMap.containsKey(col)){
++            equalValueMap.put(col, value);
 +        }else{
-+            if (value!=equalValue){
++            if (value.equals(equalValueMap.get(col))){
 +                this.noResult=true;
 +                return;
 +            }
@@ -734,12 +774,13 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +      boolean getOne=true;
 +      StringBuilder result = null;
 +      do{
++    	  
 +          if (this.noResult || (this.count >= this.totalSize)) {
 +            key = null;
 +            value = null;
 +            return false;
 +          }
-+
++          getOne=true;
 +          int [] indexArr=new int[this.dimsSize];
 +          int remain=this.count;
 +          int newIndex=0;
@@ -768,10 +809,10 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +                  ArrayList<Double> nValues=notEqualMap.get(varName);
 +                  if(!eval_value(new Double(val.toString()),varName,gValue,lValue,nValues)){
 +                    getOne=false;
-+                    this.count += 1;
-+//                    System.err.println("filtered value :"+val);
++                    this.count++;
 +                    break;
 +                  }
++                  
 +              }
 +              result.append(val.toString());
 +              varPos++;
@@ -780,11 +821,10 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +              result.append(this.seprator);
 +            }
 +          }
-+
 +      }while(!getOne);
 +      key.set(this.count);
 +      value.set(result.toString());
-+      this.count += 1;
++      this.count+=1; 
 +      return true;
 +    }
 +
@@ -816,8 +856,8 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +}
 diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java
 --- src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java	1970-01-01 08:00:00.000000000 +0800
-+++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java	2013-04-11 00:24:32.201301396 +0800
-@@ -0,0 +1,680 @@
++++ src/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/netcdf/NcFileRangeInputFormat.java	2014-01-06 00:49:17.543054622 +0800
+@@ -0,0 +1,714 @@
 +package org.apache.hadoop.hive.contrib.fileformat.netcdf;
 +
 +import java.io.IOException;
@@ -1116,13 +1156,18 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +    int[] origin;
 +    int[] shape;
 +    VariableSlicer vs = new VariableSlicer();
++    public HashMap<String,Double> equalValueMap= new HashMap();
 +    public HashMap<String, Double> greaterValueMap = new HashMap();
 +    public HashMap<String, Boolean> greaterBoolMap = new HashMap();
 +    public HashMap<String, Boolean> lessBoolMap = new HashMap();
 +    public HashMap<String, Double> lessValueMap = new HashMap();
++    public HashMap<String, ArrayList<Double>> notEqualMap = new HashMap();
 +    public HashSet<String> fixs = new HashSet();
 +    public HashSet<String> cols = new HashSet();
-+    
++    boolean noResult=false;
++    boolean notEqual(Double input,Double num){
++        return !input.equals(num)?true:false;
++    }
 +    boolean greaterEqual(Double input,Double num){
 +        return input>=num?true:false;
 +    }
@@ -1135,7 +1180,8 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +    boolean less(Double input,Double num){
 +        return input<num?true:false;
 +    }
-+    boolean eval_value(Double val,String col,Double gValue,Double lValue){
++   
++    boolean eval_value(Double val,String col,Double gValue,Double lValue,ArrayList<Double> nValues){
 +        if(gValue!=null){
 +            if(greaterBoolMap.get(col)==true){
 +                if(!greaterEqual(val,gValue)){
@@ -1158,9 +1204,15 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +                }
 +            }
 +        }
++        if(nValues!=null){
++            for(Double d:nValues){
++                if(!notEqual(val,d)){
++                    return false;
++                }
++            }
++        }
 +        return true;
 +    }
-+
 +    void updateGreaterValueMap(String col,Double value,Boolean equal){
 +        Double old=greaterValueMap.get(col);
 +        if(old==null){
@@ -1170,7 +1222,7 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +            if(value>old){
 +                this.greaterValueMap.put(col, value);
 +                this.greaterBoolMap.put(col, equal);
-+            }else if(value==old){
++            }else if(value.equals(old)){
 +                if(!equal)
 +                    this.greaterBoolMap.put(col,equal);
 +            }
@@ -1185,7 +1237,7 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +            if(value<old){
 +                this.lessValueMap.put(col, value);
 +                this.lessBoolMap.put(col, equal);
-+            }else if(value==old){
++            }else if(value.equals(old)){
 +                if(!equal)
 +                    this.lessBoolMap.put(col,equal);
 +            }
@@ -1196,9 +1248,28 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +      if ((op instanceof GenericUDFOPEqual)) {
 +        updateGreaterValueMap(col,value,Boolean.valueOf(true));
 +        updateLessValueMap(col,value,Boolean.valueOf(true));
++        if(!equalValueMap.containsKey(col)){
++            equalValueMap.put(col, value);
++        }else{
++            if (value.equals(equalValueMap.get(col))){
++                this.noResult=true;
++                return;
++            }
++        }
 +        this.fixs.add(col);
 +        this.cols.add(col);
 +      } else {
++    	  if((op instanceof GenericUDFOPNotEqual)){
++              if(notEqualMap.get(col)==null){
++                ArrayList<Double> list=new ArrayList<Double>();
++                list.add(value);
++                notEqualMap.put(col,list);
++              }else{
++                notEqualMap.get(col).add(value);
++              }
++              this.cols.add(col); 
++              return; 
++            }
 +        if (this.fixs.contains(col)) {
 +          return;
 +        }
@@ -1392,7 +1463,9 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +      }
 +      HashMap beginMap = this.vs.getBeginMap();
 +      HashMap endMap = this.vs.getEndMap();
-+
++      if(this.noResult)
++          return;
++      
 +      int size = mainVar.getDimensions().size();
 +      this.origin = new int[size];
 +      this.shape = new int[size];
@@ -1426,12 +1499,12 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +      boolean getOne=true;
 +      StringBuilder result = null;
 +      do{
-+          if ((!this.vs.getHasResult()) || (this.count >= this.idx.getSize())) {
++          if (this.noResult||(!this.vs.getHasResult()) || (this.count >= this.idx.getSize())) {
 +            key = null;
 +            value = null;
 +            return false;
 +          }
-+
++          getOne=true;
 +          int[] idxCount = this.idx.getCurrentCounter();
 +          int dimPos = 0;
 +          int varPos = 0;
@@ -1448,7 +1521,8 @@ diff -urN src_origin/contrib/src/java/org/apache/hadoop/hive/contrib/fileformat/
 +              if(this.cols.contains(varName)){
 +                  Double gValue=greaterValueMap.get(varName);
 +                  Double lValue=lessValueMap.get(varName);
-+                  if(!eval_value(new Double(val.toString()),varName,gValue,lValue)){
++                  ArrayList<Double> nValues=notEqualMap.get(varName);
++                  if(!eval_value(new Double(val.toString()),varName,gValue,lValue,nValues)){
 +                    getOne=false;
 +                    this.idx.incr();
 +                    this.count += 1;
@@ -2459,7 +2533,7 @@ diff -urN src_origin/ivy/libraries.properties src/ivy/libraries.properties
  jackson.version=1.8.8
  javaewah.version=0.3.2
  jdo-api.version=2.3-ec
-Binary files src_origin/lib/netcdfAll-4.2.jar and src/lib/netcdfAll-4.2.jar differ
+Binary files src_origin/lib/netcdf-4.3.16-SNAPSHOT.jar and src/lib/netcdf-4.3.16-SNAPSHOT.jar differ
 diff -urN src_origin/ql/ivy.xml src/ql/ivy.xml
 --- src_origin/ql/ivy.xml	2013-04-12 12:31:20.075528408 +0800
 +++ src/ql/ivy.xml	2013-04-10 15:08:51.329821998 +0800

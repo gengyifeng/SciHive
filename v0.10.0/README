@@ -1,7 +1,7 @@
-This is the SciHive patch for hive-0.10.0
+This is the SciHive patch for hive-0.10.0, which can be downloaded from http://archive.apache.org/dist/hive.
 
 You can use the patch file to rebuild the hive-0.10.0 with hadoop-1.0.4
-For convenience, the compiled jars are also provided in the lib directory.
+For convenience, the compiled jars are also provided in the lib directory. You can use the jars without rebuild the source code. 
 
 You also need the modified NetCDF java library to read the NetCDF files in HDFS.
 You can download the modified library from https://github.com/gengyifeng/NetCDF-Java-Hadoop.
