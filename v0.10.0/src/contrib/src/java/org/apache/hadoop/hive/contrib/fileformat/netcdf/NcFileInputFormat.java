@@ -52,7 +52,7 @@ import ucar.nc2.Dimension;
 import ucar.nc2.NetcdfFile;
 import ucar.nc2.Variable;
 
-public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
+public class NcFileInputFormat2 extends FileInputFormat<LongWritable, Text>
   implements InputFormatChecker
 {
   private static final double SPLIT_SLOP = 1.1;
@@ -276,7 +276,18 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
       return true;
     }
   }
-
+  static class DRange{
+  	public int start;
+  	public int length;
+  	public DRange(){
+  		start=0;
+  		length=0;
+  	}
+  	public DRange(int i){
+  		start=i;
+  		length=1;
+  	}
+  }
   static class NcFileRecordReader
     implements RecordReader<LongWritable, Text>
   {
@@ -285,21 +296,28 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
     private NetcdfFile ncfile = null;
     private final String filename;
     private int count=0;
+    private int sectionCount=0;
     private Index idx = null;
     private final String seprator;
-    private final ArrayList<Array> varArr;
-    private final ArrayList<Variable> vars;
-    private final ArrayList<Array> dimArr;
+    private ArrayList<Array> varArr;
+    private ArrayList<Variable> vars;
+    private ArrayList<Array> dimArr;
     int[] dimMap;
     int[] types;
     int[] shrinkedTypes;
     int validIDsCount;
-    int[] shape;
     int[] validShape;
-    int[] shapeDivider;
     int[] validShapeDivider;
     int totalSize=0;
+    int sectionNum=0;
     int dimsSize=0;
+    boolean hasSection=false;
+    boolean lastOne=false;
+    int []curSectionStart=null;
+    int []curSectionCount=null;
+    int []curSectionDshape=null;
+    int innerSectionSize=0;
+    int innerSectionIndex=0;
     public HashMap<String,Double> equalValueMap= new HashMap();
     public HashMap<String, Double> greaterValueMap = new HashMap();
     public HashMap<String, Boolean> greaterBoolMap = new HashMap();
@@ -308,8 +326,8 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
     public HashMap<String, ArrayList<Double>> notEqualMap = new HashMap();
     public HashSet<String> fixs = new HashSet();
     public HashSet<String> cols = new HashSet();
-    public HashMap<String,ArrayList<Integer>> validIndexes=new HashMap();
-    public ArrayList<ArrayList<Integer>> validIndexArr;
+    public HashMap<String,ArrayList<DRange>> dRangeIndexes=new HashMap();
+    public ArrayList<ArrayList<DRange>>dRangeIndexArr=new ArrayList();
     boolean noResult=false;
     boolean notEqual(Double input,Double num){
         return !input.equals(num)?true:false;
@@ -358,6 +376,7 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
         }
         return true;
     }
+   
     void evalDimensionVariable(Variable v,String col) throws IOException{
         if(v.getDimensions().size()>1)
             return;
@@ -368,16 +387,33 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
         Double lValue=lessValueMap.get(col);
         ArrayList<Double> nValues=notEqualMap.get(col);
         Double val=null;
+        boolean hasFirst=false;
+        ArrayList<DRange> dRangeIndex=new ArrayList<DRange>();
+        DRange dr=null;
         for(int i=0;i<size;i++){
             val=new Double(arr.getObject(i).toString());
             if(!eval_value(val,col,gValue,lValue,nValues)){
                 continue;
             }
+            if(!hasFirst){
+                dr=new DRange(i);
+            	hasFirst=true;
+            }else{
+            	if(i==dr.start+dr.length){
+            		dr.length++;
+            	}else{
+            		dRangeIndex.add(dr);
+            		dr=new DRange(i);
+            	}
+            }
             validIndex.add(i);    
+        }
+        if(dr!=null){
+        	dRangeIndex.add(dr);
         }
         if(validIndex.size()==0)
             noResult=true;
-        validIndexes.put(col,validIndex);
+        dRangeIndexes.put(col,dRangeIndex);
     }
     void updateGreaterValueMap(String col,Double value,Boolean equal){
         Double old=greaterValueMap.get(col);
@@ -580,9 +616,9 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
           int size = mainVar.getDimensions().size();
           for (int j = 0; j < size; j++) {
             if (mainVar.getDimension(j).getName().equals(var.getName())) {
-              this.types[i] = 1;
+              this.types[i] = 1;//Dimension
               this.dimArr.add(var.read());
-
+              
               this.dimMap[(this.dimArr.size() - 1)] = j;
               isDimension = true;
             }
@@ -600,7 +636,7 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
               if (isSame) {
                 this.vars.add(var);
 
-                this.types[i] = 2;
+                this.types[i] = 2;// Value Variable
               }
             }
           }
@@ -626,63 +662,106 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
 
       int size = mainVar.getDimensions().size();
       this.dimsSize=size;
-      this.shape = new int[size];
       this.validShape=new int[size];
-      this.shapeDivider=new int[size];
       this.validShapeDivider=new int[size];
+      this.curSectionStart=new int[size];
+      this.curSectionCount=new int[size];
+      this.curSectionDshape=new int[size];
       this.totalSize=1;
-      this.validIndexArr=new ArrayList();
+      this.sectionNum=1;
+      
       for (int j = 0; j < size; j++) {
-        Dimension d = (Dimension)mainVar.getDimensions().get(size-1-j);
+        Dimension d = (Dimension)mainVar.getDimensions().get(size-1-j);//attention!
+        int dRangeLength=0;
         if(this.cols.contains(d.getName())){
-            validIndexArr.add(validIndexes.get(d.getName()));
-        }else{
-            ArrayList<Integer> arr=new ArrayList<Integer>();
-            for(int i=0;i<d.getLength();i++){
-                arr.add(i);
+            
+            dRangeIndexArr.add(dRangeIndexes.get(d.getName()));
+            for(DRange r:dRangeIndexes.get(d.getName())){
+            	dRangeLength+=r.length;
             }
-            validIndexArr.add(arr);
+        }else{
+           
+            ArrayList<DRange> darr=new ArrayList<DRange>();
+            DRange dr=new DRange(0);
+            dr.length=d.getLength();
+            dRangeLength=dr.length;
+            ArrayList<DRange> drlist=new ArrayList();
+            drlist.add(dr);
+            dRangeIndexArr.add(drlist);
         }
-        this.shape[j] = d.getLength();
-        if(validIndexes.get(d.getName())==null)
-            this.validShape[j]=d.getLength();
+
+        if(dRangeIndexes.get(d.getName())==null)
+            this.validShape[j]=1;
         else
-            this.validShape[j]=validIndexes.get(d.getName()).size();
+            this.validShape[j]=dRangeIndexes.get(d.getName()).size();
 
         if(j==0){
-            shapeDivider[j]=1;
+
             validShapeDivider[j]=1;
         }else{
-            shapeDivider[j]=shapeDivider[j-1]*shape[j-1];
+
             validShapeDivider[j]=validShapeDivider[j-1]*validShape[j-1];
         }
-        totalSize*=validShape[j];
+        sectionNum*=validShape[j];
+        totalSize*=dRangeLength;
       }
       System.err.println("total index size: "+totalSize);
-        for (int i = 0; i < this.vars.size(); i++)
-          this.varArr.add(((Variable)this.vars.get(i)).read());
-    }
 
+    }
+    
+    
     public synchronized boolean next(LongWritable key, Text value)
       throws IOException
     {
       boolean getOne=true;
       StringBuilder result = null;
       do{
-    	  
-          if (this.noResult || (this.count >= this.totalSize)) {
-            key = null;
-            value = null;
-            return false;
-          }
+      if (this.noResult || (this.count >= this.totalSize)) {
+          key = null;
+          value = null;
+          return false;
+        }
+      if(!hasSection||innerSectionSize==innerSectionIndex){
+    	  int secIndex=sectionCount;
+    	  DRange dtmp=null;
+    	  this.innerSectionSize=1;
+    	  this.innerSectionIndex=0;
+    	  for(int i=0;i<this.dimsSize;i++){
+    		  dtmp=this.dRangeIndexArr.get(this.dimsSize-1-i).get(secIndex/validShapeDivider[this.dimsSize-1-i]);
+    		  secIndex=secIndex%validShapeDivider[this.dimsSize-1-i];
+    		  this.curSectionStart[i]=dtmp.start;
+    		  this.curSectionCount[i]=dtmp.length;
+    		  //System.out.println("index "+i+" "+ dtmp.start+" "+dtmp.length);
+    		  this.innerSectionSize*=dtmp.length;
+    		  
+    	  }
+    	  for(int i=0;i<dimsSize;i++){
+    		  if(i==0){
+    			  this.curSectionDshape[dimsSize-1-i]=1;
+    		  }else{
+    			  this.curSectionDshape[dimsSize-1-i]=this.curSectionDshape[dimsSize-i]*curSectionCount[dimsSize-i];
+    		  }
+    	  }
+    	  sectionCount++;
+    	  hasSection=true;
+    	  for (int i = 0; i < this.vars.size(); i++){
+    		  try {
+				Section sc=new Section(curSectionStart,curSectionCount);
+				this.varArr=new ArrayList();
+				 this.varArr.add(((Variable)this.vars.get(i)).read(sc));
+			} catch (InvalidRangeException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+    	  }
+      }
+      
           getOne=true;
           int [] indexArr=new int[this.dimsSize];
-          int remain=this.count;
-          int newIndex=0;
+          int remain=innerSectionIndex;
           for(int i=0;i<this.dimsSize;i++){
-              indexArr[i]=remain/validShapeDivider[this.dimsSize-1-i];
-              remain=remain%validShapeDivider[this.dimsSize-1-i];
-              newIndex+=validIndexArr.get(this.dimsSize-1-i).get(indexArr[i])*shapeDivider[this.dimsSize-1-i];
+        	  indexArr[i]=remain/curSectionDshape[i];
+             remain=remain%curSectionDshape[i];
           }
           int dimPos = 0;
           int varPos = 0;
@@ -693,17 +772,19 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
           for (int i = 0; i < this.validIDsCount; i++) {
             if(this.shrinkedTypes[i]==1) {
               pos=this.dimMap[dimPos];
-              result.append(((Array)this.dimArr.get(dimPos)).getObject(validIndexArr.get(this.dimsSize-1-pos).get(indexArr[pos])));
+              result.append(((Array)this.dimArr.get(dimPos)).getObject(curSectionStart[pos]+indexArr[pos]));
               dimPos++;
             }else{
               varName=this.vars.get(varPos).getName();
-              val=((Array)this.varArr.get(varPos)).getObject(newIndex);
+              val=((Array)this.varArr.get(varPos)).getObject(innerSectionIndex);
+              //System.out.println("innerSectionIndex "+innerSectionIndex+" "+val);
               if(this.cols.contains(varName)){
                   Double gValue=greaterValueMap.get(varName);
                   Double lValue=lessValueMap.get(varName);
                   ArrayList<Double> nValues=notEqualMap.get(varName);
                   if(!eval_value(new Double(val.toString()),varName,gValue,lValue,nValues)){
                     getOne=false;
+                    innerSectionIndex++;
                     this.count++;
                     break;
                   }
@@ -720,6 +801,7 @@ public class NcFileInputFormat extends FileInputFormat<LongWritable, Text>
       key.set(this.count);
       value.set(result.toString());
       this.count+=1; 
+      innerSectionIndex++;
       return true;
     }
 
