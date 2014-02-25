@@ -1,4 +1,4 @@
-This is the SciHive patch for hive-0.10.0, which can be downloaded from http://archive.apache.org/dist/hive.
+This is the SciHive patch for hive-0.10.0. hive-0.10.0 can be downloaded from http://archive.apache.org/dist/hive.
 
 You can use the patch file to rebuild the hive-0.10.0 with hadoop-1.0.4
 For convenience, the compiled jars are also provided in the lib directory. You can use the jars without rebuild the source code. 
