@@ -599,10 +599,12 @@ public class IndexedNcFileInputFormat extends FileInputFormat<LongWritable, Text
       ArrayList notSkipIDs = ColumnProjectionUtils.getReadColumnIDs(job);
       String jobID=Utilities.getHiveJobID(job);
       String hiveTableName=null;
-      hiveTableName=job.get("hive.table.name");
+      //hiveTableName=job.get("hive.table.name"); // some maps return null!!! strange!!!
+      hiveTableName=job.get("hive.netcdf.table.name");
+      //hiveTableName="netcdf";
       if(hiveTableName==null){
-    	  System.err.println("empty table name with split.path "+split.getPath().toString());
-    	  return;
+    	  hiveTableName="netcdf";
+    	  //System.err.println("empty table name for split.path "+split.getPath().toString());
       }
       
       LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc = Utilities.getPathToNodeDesc(jobID);
@@ -776,7 +778,7 @@ public class IndexedNcFileInputFormat extends FileInputFormat<LongWritable, Text
         
         //totalSize*=dRangeLength;
       }
-      System.out.println("TotalSectionNum:"+sectionNum);
+      System.err.println("TotalSectionNum:"+sectionNum);
       //System.err.println("total index size: "+totalSize);
       
      
