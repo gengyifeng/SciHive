@@ -30,6 +30,7 @@ import java.util.Map.Entry;
 import org.apache.hadoop.fs.Path;
 import org.apache.hadoop.hive.conf.HiveConf;
 import org.apache.hadoop.hive.ql.exec.Operator;
+import org.apache.hadoop.hive.ql.exec.FilterOperator;
 import org.apache.hadoop.hive.ql.exec.Utilities;
 import org.apache.hadoop.hive.ql.parse.OpParseContext;
 import org.apache.hadoop.hive.ql.parse.QBJoinTree;
@@ -93,7 +94,90 @@ public class MapredWork extends AbstractOperatorDesc {
   private boolean inputFormatSorted = false;
 
   private transient boolean useBucketizedHiveInputFormat;
+    
+    private LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc;
 
+	public void putPathToNodeDesc(String path, ExprNodeDesc expr) {
+		if (this.pathToNodeDesc == null) {
+			this.pathToNodeDesc = new LinkedHashMap<String, ArrayList<ExprNodeDesc>>();
+		}
+		if (this.pathToNodeDesc.containsKey(path)) {
+			((ArrayList<ExprNodeDesc>) this.pathToNodeDesc.get(path)).add(expr);
+		} else {
+			ArrayList<ExprNodeDesc> lst = new ArrayList<ExprNodeDesc>();
+			lst.add(expr);
+			this.pathToNodeDesc.put(path, lst);
+		}
+	}
+
+	public LinkedHashMap<String, ArrayList<ExprNodeDesc>> getPathToNodeDesc() {
+		return this.pathToNodeDesc;
+	}
+
+	public void setPathToNodeDesc(
+			LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc) {
+		this.pathToNodeDesc = pathToNodeDesc;
+	}
+
+	public void computePredicate() {
+		String key;
+		if ((this.pathToNodeDesc == null) && (this.pathToAliases != null))
+			for (Iterator i = this.pathToAliases.keySet().iterator(); i
+					.hasNext();) {
+				key = (String) i.next();
+				for (String alias : (ArrayList<String>) this.pathToAliases
+						.get(key))
+					addPredicate((Operator) this.aliasToWork.get(alias), key);
+			}
+
+	}
+
+	public void addPredicate(Operator<? extends OperatorDesc> op, String key) {
+		if (op instanceof FilterOperator) {
+			putPathToNodeDesc(key,
+					((FilterDesc) ((FilterOperator) op).getConf())
+							.getPredicate());
+			return;
+		}
+		if (op.getChildOperators() != null)
+			for (Operator cop : op.getChildOperators())
+				addPredicate(cop, key);
+	}
+
+	public void dispalyMapOperatorTree() {
+		System.out.println("Map Operator");
+		if ((this.aliasToWork != null) && (this.aliasToWork.size() != 0))
+			for (String key : this.aliasToWork.keySet())
+				displayOperatorTree((Operator) this.aliasToWork.get(key), 0);
+	}
+
+	public void displayReduceOperatorTree() {
+		System.out.println("Reduce Operator");
+		if (this.reducer != null)
+			displayOperatorTree(this.reducer, 0);
+	}
+
+	public void displayOperatorTree(Operator<? extends OperatorDesc> op,
+			int indent) {
+		System.out.print(indentString(indent));
+		System.out.println(op.getType());
+		if ((op instanceof FilterOperator)) {
+			System.out.print(indentString(indent));
+			System.out.println(((FilterDesc) ((FilterOperator) op).getConf())
+					.getPredicate().getExprString());
+		}
+		if (op.getChildOperators() != null)
+			for (Operator cop : op.getChildOperators())
+				displayOperatorTree(cop, indent + 2);
+	}
+
+	private String indentString(int indent) {
+		StringBuilder sb = new StringBuilder();
+		for (int i = 0; i < indent; i++) {
+			sb.append(" ");
+		}
+		return sb.toString();
+	}
   public MapredWork() {
     aliasToPartnInfo = new LinkedHashMap<String, PartitionDesc>();
   }

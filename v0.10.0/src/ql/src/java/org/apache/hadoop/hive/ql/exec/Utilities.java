@@ -199,6 +199,18 @@ public final class Utilities {
     }
   }
 
+  private static Map<String, LinkedHashMap<String, ArrayList<ExprNodeDesc>>>pathToNodeDescMap;
+  public static void setPathToNodeDesc(String jobID,LinkedHashMap<String, ArrayList<ExprNodeDesc>> pathToNodeDesc){
+	  if(pathToNodeDescMap==null){
+		  pathToNodeDescMap = Collections
+			      .synchronizedMap(new HashMap<String,LinkedHashMap<String, ArrayList<ExprNodeDesc>>>());
+	  }
+	  pathToNodeDescMap.put(jobID, pathToNodeDesc);
+  }
+  public static LinkedHashMap<String, ArrayList<ExprNodeDesc>> getPathToNodeDesc(String jobID) {
+     return pathToNodeDescMap.get(jobID);
+  }
+  
   public static MapredWork getMapRedWork(Configuration job) {
     MapredWork gWork = null;
     try {
@@ -218,6 +230,7 @@ public final class Utilities {
         MapredWork ret = deserializeMapRedWork(in, job);
         gWork = ret;
         gWork.initialize();
+        setPathToNodeDesc(jobID,gWork.getPathToNodeDesc());
         gWorkMap.put(jobID, gWork);
       }
       return (gWork);
@@ -503,6 +516,7 @@ public final class Utilities {
       // workaround for java 1.5
       e.setPersistenceDelegate(ExpressionTypes.class, new EnumDelegate());
       e.setPersistenceDelegate(GroupByDesc.Mode.class, new EnumDelegate());
+      w.computePredicate();
       e.writeObject(w);
     } finally {
       if (null != e) {
